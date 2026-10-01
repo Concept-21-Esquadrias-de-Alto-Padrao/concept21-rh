@@ -360,6 +360,7 @@ export function EmployeeProfilePage({ employeeId }: { employeeId: string }) {
                       movementCostCategories={data.movementCostCategories}
                       employeeId={data.employee.id}
                       canManage={data.canManageMovements}
+                      canDeleteTerminations={data.isMaster}
                       showEmployeeColumn={false}
                       onChanged={reload}
                     />

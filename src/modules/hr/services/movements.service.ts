@@ -1,4 +1,5 @@
 import { createAuditLog, createEmployeeHistoryEvent } from "@/modules/hr/services/audit.service";
+import { ensureCurrentUserIsMaster } from "@/modules/hr/services/auth.service";
 import { getHrSupabaseClient } from "@/modules/hr/services/service-utils";
 import type {
   Employee,
@@ -474,19 +475,28 @@ function movementLabel(type: EmployeeMovementType) {
   return type === "admission" ? "Admissão" : "Desligamento";
 }
 
-async function getTerminalStatusId() {
+async function getEmployeeStatusId(preferredKey: string, fallbackKeys: string[] = []) {
   const supabase = getHrSupabaseClient();
+  const keys = Array.from(new Set([preferredKey, ...fallbackKeys]));
   const { data, error } = await supabase
     .from("employee_statuses")
     .select("id, key")
-    .in("key", ["inativo", "desligado"])
+    .in("key", keys)
     .eq("is_active", true);
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return data?.find((status) => status.key === "inativo")?.id ?? data?.[0]?.id ?? null;
+  return data?.find((status) => status.key === preferredKey)?.id ?? data?.[0]?.id ?? null;
+}
+
+async function getTerminalStatusId() {
+  return getEmployeeStatusId("desligado", ["inativo"]);
+}
+
+async function getActiveStatusId() {
+  return getEmployeeStatusId("ativo");
 }
 
 async function syncEmployeeFromMovement(movement: EmployeeMovement, authUserId?: ID | null) {
@@ -528,6 +538,98 @@ async function syncEmployeeFromMovement(movement: EmployeeMovement, authUserId?:
 
   if (error) {
     throw new Error(error.message);
+  }
+}
+
+async function syncEmployeeFromLatestCompletedMovement(employeeId: ID, authUserId?: ID | null) {
+  const supabase = getHrSupabaseClient();
+  const { data: latestMovement, error: latestMovementError } = await supabase
+    .from("employee_movements")
+    .select(movementSelect)
+    .eq("employee_id", employeeId)
+    .eq("status", "completed")
+    .eq("is_active", true)
+    .is("deleted_at", null)
+    .order("movement_date", { ascending: false })
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (latestMovementError) {
+    throw new Error(latestMovementError.message);
+  }
+
+  if (!latestMovement) {
+    return;
+  }
+
+  const movement = latestMovement as unknown as EmployeeMovement;
+
+  if (movement.movement_type === "termination") {
+    await syncEmployeeFromMovement(movement, authUserId);
+    return;
+  }
+
+  const [activeStatusId, currentEmployee] = await Promise.all([
+    getActiveStatusId(),
+    supabase
+      .from("employees")
+      .select("status:employee_statuses(key)")
+      .eq("id", employeeId)
+      .maybeSingle(),
+  ]);
+
+  if (currentEmployee.error) {
+    throw new Error(currentEmployee.error.message);
+  }
+
+  const currentStatusKey = (currentEmployee.data as { status?: { key?: string | null } | null } | null)?.status?.key;
+  const payload: Record<string, unknown> = {
+    hire_date: movement.movement_date,
+    is_active: true,
+    termination_date: null,
+    termination_reason_id: null,
+    updated_by: authUserId,
+  };
+
+  if (activeStatusId && ["inativo", "desligado"].includes(currentStatusKey ?? "")) {
+    payload.status_id = activeStatusId;
+  }
+
+  const { error } = await supabase.from("employees").update(payload).eq("id", employeeId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
+async function assertNoExistingActiveTermination(employeeId: ID, excludeMovementId?: ID) {
+  const supabase = getHrSupabaseClient();
+  let query = supabase
+    .from("employee_movements")
+    .select("id, movement_date")
+    .eq("employee_id", employeeId)
+    .eq("movement_type", "termination")
+    .neq("status", "cancelled")
+    .eq("is_active", true)
+    .is("deleted_at", null)
+    .limit(1);
+
+  if (excludeMovementId) {
+    query = query.neq("id", excludeMovementId);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (data?.length) {
+    throw new Error(
+      "Este colaborador já possui um desligamento registrado. Exclua ou cancele o desligamento existente antes de registrar outro.",
+    );
   }
 }
 
@@ -667,6 +769,10 @@ export async function createEmployeeMovement(input: EmployeeMovementInput) {
     throw new Error("Selecione o colaborador.");
   }
 
+  if (input.movement_type === "termination" && input.status !== "cancelled") {
+    await assertNoExistingActiveTermination(employeeId);
+  }
+
   const payload = {
     employee_id: employeeId,
     movement_type: input.movement_type,
@@ -729,6 +835,10 @@ export async function updateEmployeeMovement(movementId: ID, input: EmployeeMove
     throw new Error("Selecione o colaborador.");
   }
 
+  if (input.movement_type === "termination" && input.status !== "cancelled") {
+    await assertNoExistingActiveTermination(employeeId, movementId);
+  }
+
   const { data, error } = await supabase
     .from("employee_movements")
     .update({
@@ -774,6 +884,44 @@ export async function updateEmployeeMovement(movementId: ID, input: EmployeeMove
   });
 
   return updated;
+}
+
+export async function deleteEmployeeMovement(movementId: ID) {
+  await ensureCurrentUserIsMaster();
+
+  const supabase = getHrSupabaseClient();
+  const user = await supabase.auth.getUser();
+  const before = await getEmployeeMovementById(movementId);
+
+  if (before.movement_type !== "termination") {
+    throw new Error("Somente desligamentos podem ser excluídos por esta ação.");
+  }
+
+  const { error } = await supabase.from("employee_movements").delete().eq("id", movementId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  await syncEmployeeFromLatestCompletedMovement(before.employee_id, user.data.user?.id);
+
+  await createAuditLog({
+    action: "employee_movement.termination.deleted",
+    entity: "employee_movements",
+    entity_id: movementId,
+    old_value: before,
+  });
+
+  await createEmployeeHistoryEvent({
+    employee_id: before.employee_id,
+    event_type: "termination_deleted",
+    title: "Desligamento excluído",
+    description: `Desligamento de ${before.movement_date} excluído por usuário Master.`,
+    source_entity: "employee_movements",
+    source_entity_id: before.id,
+  });
+
+  return before;
 }
 
 export async function createEmployeeAdmissionMovementSeed(employee: Employee) {

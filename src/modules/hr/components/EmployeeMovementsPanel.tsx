@@ -1,7 +1,7 @@
 "use client";
 
-import { Pencil, Plus } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 
 import { DataTable, type DataTableColumn } from "@/modules/hr/components/DataTable";
 import { DrawerForm } from "@/modules/hr/components/DrawerForm";
@@ -10,6 +10,7 @@ import { EmptyState } from "@/modules/hr/components/EmptyState";
 import { StatusBadge } from "@/modules/hr/components/StatusBadge";
 import {
   createEmployeeMovement,
+  deleteEmployeeMovement,
   updateEmployeeMovement,
   type EmployeeMovementInput,
 } from "@/modules/hr/services/movements.service";
@@ -25,6 +26,7 @@ import type {
 } from "@/modules/hr/types";
 import { formatDate } from "@/modules/hr/utils/format";
 import { formatCurrencyBRL } from "@/modules/hr/utils/labor-cost-calculations";
+import { toUserFriendlyErrorMessage } from "@/modules/hr/utils/errors";
 
 interface EmployeeMovementsPanelProps {
   movements: EmployeeMovement[];
@@ -37,6 +39,7 @@ interface EmployeeMovementsPanelProps {
   movementCostCategories: EmployeeMovementCostCategory[];
   employeeId?: string;
   canManage?: boolean;
+  canDeleteTerminations?: boolean;
   showEmployeeColumn?: boolean;
   onChanged: () => Promise<void> | void;
 }
@@ -71,14 +74,42 @@ export function EmployeeMovementsPanel({
   movementCostCategories,
   employeeId,
   canManage = true,
+  canDeleteTerminations = false,
   showEmployeeColumn = true,
   onChanged,
 }: EmployeeMovementsPanelProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingMovement, setEditingMovement] = useState<EmployeeMovement | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const employeeOptions = useMemo(
     () => (employeeId ? employees.filter((employee) => employee.id === employeeId) : employees),
     [employeeId, employees],
+  );
+
+  const removeTerminationMovement = useCallback(
+    async (movement: EmployeeMovement) => {
+      const confirmed = window.confirm(
+        `Excluir o desligamento de ${formatDate(movement.movement_date)}? Esta ação remove o movimento e seus itens de custo.`,
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      setDeletingId(movement.id);
+      setActionError(null);
+
+      try {
+        await deleteEmployeeMovement(movement.id);
+        await onChanged();
+      } catch (deleteError) {
+        setActionError(toUserFriendlyErrorMessage(deleteError, "Não foi possível excluir o desligamento."));
+      } finally {
+        setDeletingId(null);
+      }
+    },
+    [onChanged],
   );
 
   const columns = useMemo<Array<DataTableColumn<EmployeeMovement>>>(() => {
@@ -140,28 +171,43 @@ export function EmployeeMovementsPanel({
       });
     }
 
-    if (canManage) {
+    if (canManage || canDeleteTerminations) {
       baseColumns.push({
         key: "actions",
         header: "Ações",
         render: (movement) => (
-          <button
-            type="button"
-            onClick={() => {
-              setEditingMovement(movement);
-              setDrawerOpen(true);
-            }}
-            className="grid h-9 w-9 place-items-center rounded-md border border-zinc-200 text-zinc-600 transition hover:border-[#f97316] hover:text-[#f97316]"
-            title="Editar"
-          >
-            <Pencil className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            {canManage ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingMovement(movement);
+                  setDrawerOpen(true);
+                }}
+                className="grid h-9 w-9 place-items-center rounded-md border border-zinc-200 text-zinc-600 transition hover:border-[#f97316] hover:text-[#f97316]"
+                title="Editar"
+              >
+                <Pencil className="h-4 w-4" />
+              </button>
+            ) : null}
+            {canDeleteTerminations && movement.movement_type === "termination" ? (
+              <button
+                type="button"
+                onClick={() => void removeTerminationMovement(movement)}
+                disabled={deletingId === movement.id}
+                className="grid h-9 w-9 place-items-center rounded-md border border-zinc-200 text-zinc-600 transition hover:border-red-300 hover:text-red-600 disabled:opacity-60"
+                title="Excluir desligamento"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            ) : null}
+          </div>
         ),
       });
     }
 
     return baseColumns;
-  }, [canManage, showEmployeeColumn]);
+  }, [canDeleteTerminations, canManage, deletingId, removeTerminationMovement, showEmployeeColumn]);
 
   async function submitMovement(input: EmployeeMovementInput) {
     if (editingMovement) {
@@ -177,6 +223,12 @@ export function EmployeeMovementsPanel({
 
   return (
     <div className="space-y-4">
+      {actionError ? (
+        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          {actionError}
+        </div>
+      ) : null}
+
       {canManage ? (
         <div className="flex justify-end">
           <button

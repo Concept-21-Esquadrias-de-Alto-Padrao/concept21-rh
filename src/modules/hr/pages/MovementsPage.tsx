@@ -18,6 +18,7 @@ import {
   listEmployeeMovementsWithSummary,
   type EmployeeMovementFilters,
 } from "@/modules/hr/services/movements.service";
+import { getCurrentUserAccess, hasMasterRole } from "@/modules/hr/services/auth.service";
 import { checkUserPermission } from "@/modules/hr/services/permissions.service";
 import { listSettingItems } from "@/modules/hr/services/settings.service";
 import type {
@@ -51,6 +52,7 @@ interface MovementsPageData {
   terminationReasons: TerminationReason[];
   movementCostCategories: EmployeeMovementCostCategory[];
   canManage: boolean;
+  isMaster: boolean;
 }
 
 async function loadMovementsPageData(filters: EmployeeMovementFilters): Promise<MovementsPageData> {
@@ -64,6 +66,7 @@ async function loadMovementsPageData(filters: EmployeeMovementFilters): Promise<
     terminationReasons,
     movementCostCategories,
     canManage,
+    currentUserAccess,
   ] = await Promise.all([
     listEmployeeMovementsWithSummary(filters),
     listEmployees({}),
@@ -74,6 +77,7 @@ async function loadMovementsPageData(filters: EmployeeMovementFilters): Promise<
     listSettingItems("termination_reasons"),
     listEmployeeMovementCostCategories({ includeInactive: true }),
     checkUserPermission("hr.movements.manage"),
+    getCurrentUserAccess(),
   ]);
 
   return {
@@ -87,6 +91,7 @@ async function loadMovementsPageData(filters: EmployeeMovementFilters): Promise<
     terminationReasons: terminationReasons as TerminationReason[],
     movementCostCategories,
     canManage,
+    isMaster: hasMasterRole(currentUserAccess),
   };
 }
 
@@ -274,6 +279,7 @@ export function MovementsPage() {
                 terminationReasons={data.terminationReasons}
                 movementCostCategories={data.movementCostCategories}
                 canManage={data.canManage}
+                canDeleteTerminations={data.isMaster}
                 onChanged={reload}
               />
             </SectionCard>
