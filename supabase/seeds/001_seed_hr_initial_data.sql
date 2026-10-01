@@ -90,19 +90,19 @@ insert into public.occurrence_types (
 )
 values
   ('Advertência verbal', 'advertencia_verbal', (select id from public.occurrence_categories where key = 'disciplinar'), false, false, false, true, true, true, 1),
-  ('Advertência escrita', 'advertencia_escrita', (select id from public.occurrence_categories where key = 'disciplinar'), true, true, false, true, true, true, 2),
-  ('Suspensão', 'suspensao', (select id from public.occurrence_categories where key = 'disciplinar'), true, true, false, true, true, true, 3),
+  ('Advertência escrita', 'advertencia_escrita', (select id from public.occurrence_categories where key = 'disciplinar'), false, true, false, true, true, true, 2),
+  ('Suspensão', 'suspensao', (select id from public.occurrence_categories where key = 'disciplinar'), false, true, false, true, true, true, 3),
   ('Elogio', 'elogio', (select id from public.occurrence_categories where key = 'reconhecimento'), false, false, true, true, false, true, 4),
   ('Feedback', 'feedback', (select id from public.occurrence_categories where key = 'administrativa'), false, false, true, true, false, true, 5),
   ('Atraso', 'atraso', (select id from public.occurrence_categories where key = 'operacional'), false, false, false, true, true, true, 6),
   ('Falta sem justificativa', 'falta_sem_justificativa', (select id from public.occurrence_categories where key = 'operacional'), false, false, false, true, true, true, 7),
-  ('Acidente', 'acidente', (select id from public.occurrence_categories where key = 'seguranca'), true, true, false, true, true, true, 8),
-  ('Incidente', 'incidente', (select id from public.occurrence_categories where key = 'seguranca'), true, false, false, true, true, true, 9),
-  ('Entrega de EPI', 'entrega_epi', (select id from public.occurrence_categories where key = 'seguranca'), true, false, true, true, false, true, 10),
-  ('Devolução de EPI', 'devolucao_epi', (select id from public.occurrence_categories where key = 'seguranca'), true, false, true, true, false, true, 11),
+  ('Acidente', 'acidente', (select id from public.occurrence_categories where key = 'seguranca'), false, true, false, true, true, true, 8),
+  ('Incidente', 'incidente', (select id from public.occurrence_categories where key = 'seguranca'), false, false, false, true, true, true, 9),
+  ('Entrega de EPI', 'entrega_epi', (select id from public.occurrence_categories where key = 'seguranca'), false, false, true, true, false, true, 10),
+  ('Devolução de EPI', 'devolucao_epi', (select id from public.occurrence_categories where key = 'seguranca'), false, false, true, true, false, true, 11),
   ('Alteração de cargo', 'alteracao_cargo', (select id from public.occurrence_categories where key = 'movimentacao_interna'), false, true, true, true, false, true, 12),
   ('Promoção', 'promocao', (select id from public.occurrence_categories where key = 'movimentacao_interna'), false, true, true, true, false, true, 13),
-  ('Desligamento', 'desligamento', (select id from public.occurrence_categories where key = 'desligamento'), true, true, false, true, true, true, 14)
+  ('Desligamento', 'desligamento', (select id from public.occurrence_categories where key = 'desligamento'), false, true, false, true, true, true, 14)
 on conflict (key) do update
 set
   name = excluded.name,

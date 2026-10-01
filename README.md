@@ -47,31 +47,37 @@ Em Auth > Email Templates > Confirm signup, mantenha o botao/link apontando para
 
 ## Banco Supabase
 
-Migrations:
+As migrations ficam em `supabase/migrations` e sao aplicadas em ordem lexical pelo nome do arquivo.
+A pasta e a fonte de verdade; a tabela `app.codex_migration_history` registra:
 
-1. `supabase/migrations/001_create_hr_core_tables.sql`
-2. `supabase/migrations/002_create_hr_operations_tables.sql`
-3. `supabase/migrations/003_create_hr_security_audit_custom_fields.sql`
-4. `supabase/migrations/004_enable_hr_rls_and_storage.sql`
+- `version`: nome do arquivo sem `.sql`;
+- `file_name`: nome completo do arquivo;
+- `checksum_sha256`: hash SHA-256 dos bytes reais do arquivo;
+- `execution_mode`: `baseline` ou `applied`;
+- `applied_at` e `applied_by`.
 
-Seed:
+Comandos:
+
+```bash
+npm run db:migrations:dry-run
+npm run db:migrations:baseline
+npm run db:migrations:push
+```
+
+Os comandos usam `scripts/apply-supabase-migrations.mjs`, um runner Node multiplataforma que chama `npx supabase db query --linked`. O Supabase CLI precisa estar autenticado e o projeto precisa estar linkado na maquina.
+
+Seeds rerunnable:
 
 - `supabase/seeds/001_seed_hr_initial_data.sql`
+- `supabase/seeds/002_update_portuguese_texts.sql`
+- `supabase/seeds/003_daily_occurrence_report_config.sql`
+- `supabase/seeds/004_seed_labor_costs.sql`
 
-Voce pode aplicar pelo Supabase SQL Editor, na ordem acima, ou adaptar para seu fluxo de Supabase CLI.
+Promocao manual de Master:
 
-Depois do seed, crie o primeiro usuário em Supabase Auth e vincule-o ao perfil Master:
-
-```sql
-insert into public.profiles (auth_user_id, full_name, email)
-values ('AUTH_USER_ID_AQUI', 'Usuário Master', 'master@concept21.com.br');
-
-insert into public.user_roles (profile_id, role_id)
-select p.id, r.id
-from public.profiles p
-join public.roles r on r.key = 'master'
-where p.email = 'master@concept21.com.br';
-```
+- Use `supabase/manual/promote_master.example.sql` como template.
+- Troque os placeholders pelo e-mail/nome corretos antes de executar.
+- Esse script nao faz parte da sequencia generica de seeds.
 
 Importante: usuários do Supabase Auth ficam em `auth.users`, mas a aplicação lista usuários a partir de `public.profiles`. Portanto, um usuário criado apenas em **Authentication > Users** ainda não aparece no módulo até existir o registro correspondente em `public.profiles` e, para acesso Master, o vínculo em `public.user_roles`.
 
@@ -91,7 +97,7 @@ order by p.created_at desc;
 
 ## Storage
 
-A migration `004_enable_hr_rls_and_storage.sql` cria o bucket privado:
+O bucket privado de documentos e:
 
 ```txt
 hr-documents
@@ -103,7 +109,7 @@ Os arquivos sao gravados em:
 employees/{employee_id}/documents/{document_id}-{filename}
 ```
 
-O acesso é feito por URL assinada via `generateDocumentSignedUrl`.
+O acesso e feito por URL assinada via `generateDocumentSignedUrl`. A RLS do Storage extrai o `employee_id` do path e aplica os mesmos escopos de RBAC/RLS do colaborador.
 
 ## Telas
 
@@ -111,6 +117,8 @@ O acesso é feito por URL assinada via `generateDocumentSignedUrl`.
 - `/rh`
 - `/rh/colaboradores`
 - `/rh/colaboradores/[id]`
+- `/rh/admissoes-desligamentos`
+- `/rh/folha`
 - `/rh/documentos`
 - `/rh/ferias-afastamentos`
 - `/rh/treinamentos`
@@ -132,20 +140,19 @@ Implementado:
 
 - modelagem SQL nativa para RH;
 - seeds iniciais da Concept21;
-- RLS inicial por permissão;
+- RLS por permissao e por escopo real de colaborador;
 - RBAC com roles, permissions, role_permissions e user_roles;
 - Supabase Auth com tela de login;
 - Supabase Storage privado para documentos;
 - services por dominio usando Supabase Client;
 - tipos TypeScript do dominio;
-- dashboard, colaboradores, prontuário com abas, documentos, férias/afastamentos, treinamentos, ocorrências e configurações;
+- dashboard, colaboradores, prontuário com abas, folha de pagamento, admissoes/desligamentos, documentos, férias/afastamentos, treinamentos, ocorrências e configurações;
 - matriz de permissões;
 - auditoria e histórico de colaborador;
 - base para importação futura de CSV.
 
 Preparado para evolucao:
 
-- escopos avancados de RLS por setor/subordinados;
 - importação XLSX com mapeamento de colunas;
 - portal do colaborador;
 - aprovacoes com workflow mais detalhado;

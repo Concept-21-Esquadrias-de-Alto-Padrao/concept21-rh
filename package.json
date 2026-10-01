@@ -7,9 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "db:migrations:dry-run": "powershell -ExecutionPolicy Bypass -File scripts/apply-supabase-migrations.ps1 -DryRun",
-    "db:migrations:baseline": "powershell -ExecutionPolicy Bypass -File scripts/apply-supabase-migrations.ps1 -BaselineExisting",
-    "db:migrations:push": "powershell -ExecutionPolicy Bypass -File scripts/apply-supabase-migrations.ps1"
+    "db:migrations:dry-run": "node scripts/apply-supabase-migrations.mjs --dry-run",
+    "db:migrations:baseline": "node scripts/apply-supabase-migrations.mjs --baseline-existing",
+    "db:migrations:push": "node scripts/apply-supabase-migrations.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",

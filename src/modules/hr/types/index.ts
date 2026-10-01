@@ -557,6 +557,7 @@ export type OccurrenceCategory = LookupRecord;
 
 export interface OccurrenceType extends LookupRecord {
   occurrence_category_id?: ID | null;
+  /** @deprecated Occurrences no longer accept attachments; kept only for database compatibility. */
   requires_attachment: boolean;
   requires_approval: boolean;
   visible_to_employee: boolean;

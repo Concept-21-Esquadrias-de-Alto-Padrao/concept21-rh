@@ -36,6 +36,20 @@ Permissões iniciais usam chaves como:
 
 O perfil Master e protegido por trigger no banco e a funcao `app.has_permission` sempre considera `app.has_role('master')`.
 
+### Escopos
+
+As permissoes podem ser concedidas com estes escopos:
+
+- `all`: acesso a todos os registros cobertos pela permission key;
+- `own_department`: acesso a colaboradores do mesmo departamento do employee vinculado ao profile atual;
+- `subordinates`: acesso a toda a cadeia abaixo do employee atual em `employees.manager_employee_id`;
+- `own_data`: acesso somente ao colaborador cujo `employees.profile_id` aponta para o profile atual;
+- `none`: sem acesso.
+
+Um usuario pode ter varios roles ativos. Nesses casos, os escopos sao somados por uniao. Exemplo: `own_department` em um role e `subordinates` em outro libera o registro se qualquer uma das duas regras permitir.
+
+Perfis sem employee vinculado falham fechado para `own_data`, `own_department` e `subordinates`. O sistema nao tenta vincular por nome ou e-mail.
+
 ## Usuários
 
 O Supabase Auth autentica usuários em `auth.users`. O sistema de RH não consulta `auth.users` diretamente no client; ele lista usuários por `public.profiles`, com perfis em `public.user_roles`.
@@ -51,23 +65,23 @@ Se o usuário existe em Auth mas não aparece na tela, falta o registro em `publ
 
 ## RLS
 
-Todas as tabelas sensiveis do RH tem RLS habilitado na migration `004_enable_hr_rls_and_storage.sql`.
+Todas as tabelas sensiveis do RH tem RLS habilitado desde a migration `004_enable_hr_rls_and_storage.sql`.
 
 Implementado:
 
-- usuários autenticados acessam conforme RBAC;
-- Master acessa tudo via `app.has_role('master')`;
+- usuarios autenticados acessam conforme RBAC e escopo real do colaborador;
+- Master acessa tudo com escopo `all`;
 - policies separadas para visualizar, criar e editar;
 - deletes diretos não são expostos para dados históricos;
 - Storage privado protegido por policies em `storage.objects`.
+- `app.has_permission()` continua respondendo apenas se o usuario possui a permissao em algum escopo valido;
+- `app.permission_scopes()` retorna todos os escopos ativos distintos;
+- `app.can_access_employee(employee_id, permission_key)` decide se aquele usuario pode acessar aquele colaborador;
+- tabelas filhas com `employee_id` usam `app.can_access_employee`;
+- vinculos transitivos, como itens de custo de movimentacao, resolvem o employee pelo registro pai;
+- relatorios diarios persistidos sao historicos agregados e exigem escopo `all`.
 
-Preparado para evolucao:
-
-- filtro real por `own_department`;
-- filtro real por `subordinates`;
-- portal de colaborador com escopo `own_data`.
-
-Antes de produção, valide as policies com usuários reais de cada perfil.
+Leia tambem `docs/security-rbac-rls.md` antes de criar novas tabelas ligadas a colaboradores.
 
 ## Documentos
 
@@ -84,6 +98,11 @@ Validacoes:
 - MIME type permitido;
 - tamanho maximo por tipo de documento;
 - documentos não públicos.
+- path obrigado no formato `employees/{employee_id}/documents/{document_id}-{filename}` para que a policy de Storage extraia o colaborador e aplique o escopo correto.
+
+## Ocorrências
+
+Ocorrências nao possuem anexos na experiencia ativa. A coluna legada `occurrence_types.requires_attachment` permanece no banco por compatibilidade, mas deve ficar sempre `false`. A tabela `employee_occurrence_attachments` permanece apenas para leitura historica autorizada e novos inserts da aplicacao sao bloqueados por RLS.
 
 ## Configurações
 
