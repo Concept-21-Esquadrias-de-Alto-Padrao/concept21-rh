@@ -24,6 +24,21 @@ export function formatDateTime(value?: string | null) {
   }).format(new Date(value));
 }
 
+export function formatFloatingDateTime(value?: string | null) {
+  if (!value) {
+    return "-";
+  }
+
+  const match = /^(\d{4})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2})/.exec(value);
+
+  if (!match) {
+    return formatDateTime(value);
+  }
+
+  const [, year, month, day, hour, minute] = match;
+  return `${day}/${month}/${year}, ${hour}:${minute}`;
+}
+
 export function formatCpf(value?: string | null) {
   if (!value) {
     return "-";

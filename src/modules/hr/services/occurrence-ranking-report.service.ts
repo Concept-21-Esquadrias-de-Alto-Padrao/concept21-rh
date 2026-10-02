@@ -3,7 +3,7 @@ import type { UserOptions } from "jspdf-autotable";
 
 import { createAuditLog } from "@/modules/hr/services/audit.service";
 import type { JsonValue } from "@/modules/hr/types";
-import { formatDateTime } from "@/modules/hr/utils/format";
+import { formatDateTime, formatFloatingDateTime } from "@/modules/hr/utils/format";
 
 export interface OccurrenceRankingPdfRow {
   rank: number;
@@ -236,7 +236,7 @@ async function drawRankingTable(doc: jsPDF, report: OccurrenceRankingPdfReport, 
             row.employeeStatusName,
             row.occurrenceCount,
             row.typeSummary,
-            formatDateTime(row.lastOccurrenceAt),
+            formatFloatingDateTime(row.lastOccurrenceAt),
             formatPercent(row.percentage),
           ])
         : [["Sem registros para os filtros selecionados", "-", "-", "-", "-", "-", "-", "-", "-"]],

@@ -38,7 +38,7 @@ import type {
   OccurrenceVisibility,
 } from "@/modules/hr/types";
 import { toUserFriendlyErrorMessage } from "@/modules/hr/utils/errors";
-import { formatDateTime } from "@/modules/hr/utils/format";
+import { formatFloatingDateTime } from "@/modules/hr/utils/format";
 import { occurrenceStatusLabels } from "@/modules/hr/utils/status";
 
 interface OccurrencesPageData {
@@ -167,7 +167,7 @@ export function OccurrencesPage() {
         ),
       },
       { key: "category", header: "Categoria", render: (item) => item.occurrence_category?.name ?? "-" },
-      { key: "date", header: "Data", render: (item) => formatDateTime(item.occurred_at) },
+      { key: "date", header: "Data", render: (item) => formatFloatingDateTime(item.occurred_at) },
       {
         key: "status",
         header: "Status",

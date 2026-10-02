@@ -16,7 +16,7 @@ import {
 } from "@/modules/hr/services/occurrence-ranking-report.service";
 import type { Employee, EmployeeOccurrence, OccurrenceType } from "@/modules/hr/types";
 import { toUserFriendlyErrorMessage } from "@/modules/hr/utils/errors";
-import { formatDate, formatDateTime } from "@/modules/hr/utils/format";
+import { formatDate, formatFloatingDateTime } from "@/modules/hr/utils/format";
 
 interface OccurrenceRankingReportPanelProps {
   occurrences: EmployeeOccurrence[];
@@ -645,7 +645,11 @@ export function OccurrenceRankingReportPanel({
         render: (item) => <StatusBadge label={item.employeeStatusName} status={item.employeeStatusKey} />,
       },
       { key: "typeSummary", header: "Tipo mais frequente", render: (item) => item.typeSummary },
-      { key: "lastOccurrenceAt", header: "Última ocorrência", render: (item) => formatDateTime(item.lastOccurrenceAt) },
+      {
+        key: "lastOccurrenceAt",
+        header: "Última ocorrência",
+        render: (item) => formatFloatingDateTime(item.lastOccurrenceAt),
+      },
       { key: "percentage", header: "Participação", render: (item) => formatPercent(item.percentage) },
     ],
     [maxOccurrences],

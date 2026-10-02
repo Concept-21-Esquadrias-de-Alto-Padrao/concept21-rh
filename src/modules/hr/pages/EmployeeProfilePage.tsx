@@ -59,7 +59,7 @@ import type {
   TerminationReason,
   Vacation,
 } from "@/modules/hr/types";
-import { formatCpf, formatDate, formatDateTime } from "@/modules/hr/utils/format";
+import { formatCpf, formatDate, formatFloatingDateTime } from "@/modules/hr/utils/format";
 import {
   documentStatusLabels,
   occurrenceStatusLabels,
@@ -268,7 +268,7 @@ export function EmployeeProfilePage({ employeeId }: { employeeId: string }) {
     () => [
       { key: "title", header: "Titulo", render: (item) => item.title },
       { key: "type", header: "Tipo", render: (item) => item.occurrence_type?.name ?? "-" },
-      { key: "date", header: "Data", render: (item) => formatDateTime(item.occurred_at) },
+      { key: "date", header: "Data", render: (item) => formatFloatingDateTime(item.occurred_at) },
       {
         key: "status",
         header: "Status",
