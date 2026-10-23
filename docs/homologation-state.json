@@ -1,0 +1,877 @@
+{
+  "checkedAt": "2026-10-23T14:26:44.153Z",
+  "repository": "https://github.com/Concept-21-Esquadrias-de-Alto-Padrao/concept21-rh",
+  "branch": "codex/homologacao-rh",
+  "sourceSnapshotCommit": "2bd190d4fb4714a7fae775e9ef43599f0d74d007",
+  "deployment": {
+    "id": "dpl_9sYRQvxSCVgNVWxABFPnuqMPTV2f",
+    "url": "https://concept21-rh-homologacao-m2n9c8x2m-concept-aluminium.vercel.app",
+    "appUrl": "https://concept21-rh-homologacao.vercel.app",
+    "status": "READY",
+    "originalBaseCommit": "1f2da7b13bbb10451d12630859dd99a41857ac51",
+    "originalSource": "CLI upload with uncommitted changes; snapshot preserves all uploaded build files"
+  },
+  "vercel": {
+    "projectId": "prj_7WWMGTE7cuoJjCoF4Z2rp9YvKynv",
+    "projectName": "concept21-rh-homologacao",
+    "teamId": "team_CQgXB4kvuQBOXiv4siUoGnUe",
+    "gitIntegration": null
+  },
+  "supabase": {
+    "projectRef": "rcoqywqyjcxdzchojxzs",
+    "organizationId": "vaxcezwtgfrtnrkwcecn",
+    "ledgerTable": "app.homologation_bootstrap_files",
+    "standardCliHistoryExists": false,
+    "files": [
+      {
+        "checksum": "9adf48e8fa071bd4c878c0444d4951362ae6395324536380155d9fbaa47f12fd",
+        "file_name": "supabase/homologation/block-email.sql"
+      },
+      {
+        "checksum": "d2fb7b40b40e7be5acc63772ee5525f256bae7effcc23380217fbeb0122a4af4",
+        "file_name": "supabase/homologation/fixtures.sql"
+      },
+      {
+        "checksum": "08dea3d66c3f69006ccef30e5e4ad5360e9c1607ca579d997a8045b33fa8cffe",
+        "file_name": "supabase/migrations/001_create_hr_core_tables.sql"
+      },
+      {
+        "checksum": "dd71aec44f41f7ac1be980287974a4cd435c7e962b7fffb43805e74dbf3a7187",
+        "file_name": "supabase/migrations/002_create_hr_operations_tables.sql"
+      },
+      {
+        "checksum": "137d7cd65fcdc101e5111d4529082189048bdb9a8ffb55e09b4cd89bda8c8e0d",
+        "file_name": "supabase/migrations/003_create_hr_security_audit_custom_fields.sql"
+      },
+      {
+        "checksum": "9a7e0c219f77d71900ec22b3d1cb6477d18d57a7b75a3fc675f58680f8da08d6",
+        "file_name": "supabase/migrations/004_enable_hr_rls_and_storage.sql"
+      },
+      {
+        "checksum": "6b94c708f2fc239a9c6c204ea9e53b6dc481c0cd76d03b0f600b2d69db69ba42",
+        "file_name": "supabase/migrations/005_allow_current_user_role_names.sql"
+      },
+      {
+        "checksum": "54da9aa6355232f74c281edba5efe21c492d7267f643e348d1f851547cf019af",
+        "file_name": "supabase/migrations/006_allow_master_self_management.sql"
+      },
+      {
+        "checksum": "f73d4b3a7f8cb0d547214ecbaa7d237d90dc555ca682a6c403ef02fc0fcadef6",
+        "file_name": "supabase/migrations/007_create_profile_on_auth_signup.sql"
+      },
+      {
+        "checksum": "7f0bf6d441c62b4968fd91febe0b16bfa8b9dab7465e358391b2d3b8fd510918",
+        "file_name": "supabase/migrations/008_daily_occurrence_reports.sql"
+      },
+      {
+        "checksum": "6f4dae3eac37c75dbbaa22104876c667fd54236836d14c0c7591a028c1f48739",
+        "file_name": "supabase/migrations/009_monthly_occurrence_report_permissions.sql"
+      },
+      {
+        "checksum": "01ab4cba83a9b0311a36724f8fe7b4924ccb797347e5581b13ce0b775a104f7e",
+        "file_name": "supabase/migrations/010_create_labor_costs.sql"
+      },
+      {
+        "checksum": "7ff3a754161081f84a487faf0aef13cc8344395bacec1a517f493e57d6fc556e",
+        "file_name": "supabase/migrations/011_make_labor_charges_manual.sql"
+      },
+      {
+        "checksum": "2353a6fc042630bfafbf2c670f4cb754948f0d4dbd102a8ca214f20f36b074d6",
+        "file_name": "supabase/migrations/012_labor_cost_provision_copy_remove.sql"
+      },
+      {
+        "checksum": "3c2f8b06664be23a8b4cc51eed8b5349a56dc7ed3a8a77771e0522255e71470a",
+        "file_name": "supabase/migrations/013_make_fgts_termination_provision_manual.sql"
+      },
+      {
+        "checksum": "a5444ff7f9d6bb5f2078a56325bfba74a96820bb1b5abd7bf810f626feff4f71",
+        "file_name": "supabase/migrations/014_hr_dashboard_turnover_permissions.sql"
+      },
+      {
+        "checksum": "e444b39df3229a1a720873b4760cb55c28b5b597d5e8f73f4c33d121daa47b6b",
+        "file_name": "supabase/migrations/015_employee_dependents_dashboard_occurrences.sql"
+      },
+      {
+        "checksum": "81756415241ba018e536673d778f5dd46e30f6cdf267da11839cf1b8302ca194",
+        "file_name": "supabase/migrations/016_access_review_email_verification.sql"
+      },
+      {
+        "checksum": "9b8090361a83b6dbf795a88ff4480a2c367923bccc708af99546638fd546444b",
+        "file_name": "supabase/migrations/017_master_delete_policies.sql"
+      },
+      {
+        "checksum": "c689b73e00b7ee6801e6468e332b786567162dd5a31b2fdeb3a5a72b788466c6",
+        "file_name": "supabase/migrations/018_occurrence_day_impact_rules.sql"
+      },
+      {
+        "checksum": "1c8eb5e565da9aa3772843afd53ebacec525a13f4103a7bd4f44d83f3a0b478e",
+        "file_name": "supabase/migrations/019_employee_admissions_terminations.sql"
+      },
+      {
+        "checksum": "0578f90fc56616369fd2c038bee2246b6095333e11cf7abe80c5d02dcb09a58b",
+        "file_name": "supabase/migrations/020_public_permission_rpc_wrappers.sql"
+      },
+      {
+        "checksum": "6244fec6c9c53ff542c9b17f83e863773316b52cb2ba91081a073b4c5a88ee0a",
+        "file_name": "supabase/migrations/021_employee_movement_cost_categories.sql"
+      },
+      {
+        "checksum": "a539c2c5ef790ee47024d9a8185ff07b3c03ed283acf053d44658d17d6a542c5",
+        "file_name": "supabase/migrations/022_seed_termination_reasons.sql"
+      },
+      {
+        "checksum": "ffe149483d47fc87653cfb02559fa9a2eb8dc99d7572fd83843af8f212e48fc9",
+        "file_name": "supabase/migrations/023_merge_falta_occurrence_type.sql"
+      },
+      {
+        "checksum": "ec1da1d367e2e825e86eecbd100b1a0aa146bdfff463725e871481e636be65bb",
+        "file_name": "supabase/migrations/024_enforce_hr_permission_scopes.sql"
+      },
+      {
+        "checksum": "b827ffcb8b67cc8cc4e492c1ec4ec5ffc002057f88c41daf0ec5dccf3bba89fe",
+        "file_name": "supabase/migrations/025_deprecate_occurrence_attachments.sql"
+      },
+      {
+        "checksum": "f64685fecab7d42031cfa6201a353143458e66e9642c90f43dae64ea040e71c3",
+        "file_name": "supabase/migrations/026_fix_termination_movements_status_and_duplicates.sql"
+      },
+      {
+        "checksum": "20de4e05d51e9492036273eb637253f326cdad95e5ecf42345adc54788c1b52a",
+        "file_name": "supabase/seeds/001_seed_hr_initial_data.sql"
+      },
+      {
+        "checksum": "92d8c5413457a3a8bf9bc0f963a787826bdb08736bbb72a134cc0f7bce9197b7",
+        "file_name": "supabase/seeds/002_update_portuguese_texts.sql"
+      },
+      {
+        "checksum": "161a17a94c85974ba0e1514c60beb587f847ec484ac293ea9aaedf5c24ee3e5f",
+        "file_name": "supabase/seeds/003_daily_occurrence_report_config.sql"
+      },
+      {
+        "checksum": "69144479f906fa13b955111c6a18aaeadb0069077e3dfc3454b468d02c87885d",
+        "file_name": "supabase/seeds/004_seed_labor_costs.sql"
+      }
+    ]
+  },
+  "sourceVerification": {
+    "method": "Each Vercel source uid compared with SHA-1 of local bytes; snapshot Git blobs checked after CRLF normalization; SHA-256 records Git content.",
+    "verifiedFileCount": 143,
+    "files": [
+      {
+        "path": ".vercelignore",
+        "deploymentSha1": "eeab46e93a5b6f8cd9c3cd3af552f0bb18f5aebb",
+        "gitBlobSha256": "0ae075c2557802ba6a68ac3dbb42fa0eb877c1b00584eeb4611c387343751771"
+      },
+      {
+        "path": "eslint.config.mjs",
+        "deploymentSha1": "44d5bed565a8dd284af3e17f3b16a1c752008d0e",
+        "gitBlobSha256": "870f1adccecf3051cbcd9fd307cef51d7633cf510979c181a81f4b1797273493"
+      },
+      {
+        "path": "next.config.ts",
+        "deploymentSha1": "2584bf9fe681a8c686f8fa36ab8444673718ae2f",
+        "gitBlobSha256": "ff89d880ce18cd0bd050af89e228a237e00efc779d324a09f6323991813c800f"
+      },
+      {
+        "path": "package-lock.json",
+        "deploymentSha1": "fd991885862b871398c5bb5f13b21962e26c488a",
+        "gitBlobSha256": "ac60cb7c57655280304b2e5cd4bba3af0ffe53effd36b68c66fba52b9764a09f"
+      },
+      {
+        "path": "package.json",
+        "deploymentSha1": "e7f41fd5d41667431ae0338a45aa44c180389019",
+        "gitBlobSha256": "bfd84693dc2e20fb9dc6b191433370fe51aaa4f41261792e7d7f7cc17351b856"
+      },
+      {
+        "path": "postcss.config.mjs",
+        "deploymentSha1": "8f8be689e9af58f80351df6e6b551146822f42a4",
+        "gitBlobSha256": "dfac7ac2d86d326a0e5adb024e7943c181393ed17a5fcb8f0315b24c7da6ddde"
+      },
+      {
+        "path": "public/file.svg",
+        "deploymentSha1": "fb380eeffe87d50b597383664c02982964d0d28c",
+        "gitBlobSha256": "2b67812c325c199a02536cdbeea0c593a72f707d323b72ee3e08dbab06753bd4"
+      },
+      {
+        "path": "public/globe.svg",
+        "deploymentSha1": "2eba23b01a46733bb8423e6d38ebf5f7e95abec5",
+        "gitBlobSha256": "b614b9bf183925957661ac851498fe1d8029fd43a62fbfed86f9e2624a57e7cf"
+      },
+      {
+        "path": "public/next.svg",
+        "deploymentSha1": "3f3e95622612b989c5bd6a03299a308c6f3c7e6b",
+        "gitBlobSha256": "55995dfad6ecb4945a1e856ddca03c5e16aa5bf13fd21b4df6a74ae79357bcfc"
+      },
+      {
+        "path": "public/vercel.svg",
+        "deploymentSha1": "cebb8852d58c8886be3e9051a26957f42bb82f1a",
+        "gitBlobSha256": "f081337b2fee635b455b63275406a3e7f39d6a014e25ad90dab5a67e62a12ac4"
+      },
+      {
+        "path": "public/window.svg",
+        "deploymentSha1": "54c48e0daa6caa317fe1b4c419007fd93e948db9",
+        "gitBlobSha256": "644768c4aaeb4767bce293344eeb0c125fb804a94d801440424072202d85e3a1"
+      },
+      {
+        "path": "src/app/api/hr/access-requests/notify/route.ts",
+        "deploymentSha1": "65cb56043c7477f3021e7a64cb4b6d4bb14878da",
+        "gitBlobSha256": "6a83ce2642b5fe68c5edf660cdd638452475d63e52b7d74678e9d22d69b65628"
+      },
+      {
+        "path": "src/app/api/hr/access-requests/reject/route.ts",
+        "deploymentSha1": "44b70795011f8a736e0b54d643788d80e8c12ad5",
+        "gitBlobSha256": "e9304e603871526292282fb321a208c3afee0eeb5b2567ed29a7cd52cc6300b4"
+      },
+      {
+        "path": "src/app/auth/callback/page.tsx",
+        "deploymentSha1": "5843a8e7667719df6abf173d61327d0529df19bc",
+        "gitBlobSha256": "7a8d02d5f8b6f37e08d5cf61576300e8791d03023fdf4dd4b681078c15cd9d0a"
+      },
+      {
+        "path": "src/app/cadastro/page.tsx",
+        "deploymentSha1": "169430c70b1a431c32eddd4a48aa765c7fa6041f",
+        "gitBlobSha256": "726f5b52f9d83d3df774ed94ff5b554e12b08ac4a90ffbdd4537b008559a8268"
+      },
+      {
+        "path": "src/app/favicon.ico",
+        "deploymentSha1": "9ecfcc8f0ead0bf3d2d7c39e084b88f41cc89a2e",
+        "gitBlobSha256": "2b8ad2d33455a8f736fc3a8ebf8f0bdea8848ad4c0db48a2833bd0f9cd775932"
+      },
+      {
+        "path": "src/app/globals.css",
+        "deploymentSha1": "635fe4b27078de5bcc4f2052209a82862ed6d7dc",
+        "gitBlobSha256": "1415f84e963d534efa7d2f98da16370eb3646003ea82339d3d69d58df240059b"
+      },
+      {
+        "path": "src/app/layout.tsx",
+        "deploymentSha1": "1850ec21aa152daa5475f3d940825085dbcc7d49",
+        "gitBlobSha256": "f2aa81131a8c994381b9eaa7930dc030e36ec16242b61731279139eda5e5a061"
+      },
+      {
+        "path": "src/app/login/page.tsx",
+        "deploymentSha1": "7d025d21dc8341923ea8847426fa8d4106635293",
+        "gitBlobSha256": "035e7cde29599a7aa5bfba698f60cd1af9ce767905b42bd513cf7461aa909e9c"
+      },
+      {
+        "path": "src/app/page.tsx",
+        "deploymentSha1": "4f0215d23137be7a18a75d629b7a623cffba0833",
+        "gitBlobSha256": "0606f35c855ee081e1792eb0615dbe5bda1cb00f721da453e1df9465fbc982e6"
+      },
+      {
+        "path": "src/app/rh/colaboradores/[id]/page.tsx",
+        "deploymentSha1": "49e229cd08c2d1ce4d51369ba2c5c15f00184ad5",
+        "gitBlobSha256": "c2c32ac456b098f679cafe70d1ccd9f48fa226a6638e7402626ac1db52dfcd35"
+      },
+      {
+        "path": "src/app/rh/colaboradores/page.tsx",
+        "deploymentSha1": "9be1cf0145b8683c19d23a3fabf16d04dbea3fed",
+        "gitBlobSha256": "096d2038c1c49d1f398b1a3f4fc14ce4e201f6d43b8c5596c1b9beaa84b5058a"
+      },
+      {
+        "path": "src/app/rh/configuracoes/page.tsx",
+        "deploymentSha1": "6e8216fdc28cb0ab9b00cd971e17917dc1574292",
+        "gitBlobSha256": "07fa5cc84a5e44b046e8b5d5116fafc119ab1de91e41afc5b22d76899e67d45d"
+      },
+      {
+        "path": "src/app/rh/documentos/page.tsx",
+        "deploymentSha1": "eaf16f8afd2670f87d460b4e1e9a0e21259a74c5",
+        "gitBlobSha256": "f1b9ad9b1504b5a52aeeb8c3d380c7f5add42f728e025c5a9a270af2678b15dd"
+      },
+      {
+        "path": "src/app/rh/error.tsx",
+        "deploymentSha1": "a801f18939395288e08c506b0bf8f9b841a18bed",
+        "gitBlobSha256": "d85b384a0f6ed8622655193dcfbe74492124933a17c8709303f9dbf6d6f75040"
+      },
+      {
+        "path": "src/app/rh/ferias-afastamentos/page.tsx",
+        "deploymentSha1": "c0b1b269a252c092a1775fcba4bd2c0e7a597a05",
+        "gitBlobSha256": "5ba06a55d49d82ec0350f842d5e79387d6f065d12a01eda231b4544fb8aa71e5"
+      },
+      {
+        "path": "src/app/rh/folha-pagamento/page.tsx",
+        "deploymentSha1": "016954c12cf7aed5d5a3451827b29c9c42f68404",
+        "gitBlobSha256": "e0b663ef7e5845db30478a1b4724a21a166486cf15097c1690f69a3f2ea02ea2"
+      },
+      {
+        "path": "src/app/rh/layout.tsx",
+        "deploymentSha1": "a098ac6df2e841f681ddfc40ce7bcd97eb78e1df",
+        "gitBlobSha256": "aa4eb1e64b1fd309e62f3630fcae4deb4fa668a7429e838baf48dbb797e41a6b"
+      },
+      {
+        "path": "src/app/rh/loading.tsx",
+        "deploymentSha1": "3c8ba316fa8356df36a3cfe526ec74ab995e5305",
+        "gitBlobSha256": "f58ce2a7c210dd2e84c060ea149865461255b54da6163ba42ab3428eab73f252"
+      },
+      {
+        "path": "src/app/rh/minha-conta/page.tsx",
+        "deploymentSha1": "b3a1899eaf6d65547ac7d424927fbab7730013f6",
+        "gitBlobSha256": "8f1a281d3cb795d8cd6613ca18f5949e4efe81e4237f6a3b74b5b1784748ea91"
+      },
+      {
+        "path": "src/app/rh/movimentacoes/page.tsx",
+        "deploymentSha1": "53601d2b468d5ff04f666c44b220aa75b9899ae5",
+        "gitBlobSha256": "11f61054ea44c9f7d90800edf3bb838a41fbf3680bf03b10280d1fe5565f8c09"
+      },
+      {
+        "path": "src/app/rh/ocorrencias/page.tsx",
+        "deploymentSha1": "0eea1b202d5eb9539f303d5ed6357d821235113d",
+        "gitBlobSha256": "63fa13750df69c43c64eb2c6fba66415d2c7a976372af71f9b008573064e6243"
+      },
+      {
+        "path": "src/app/rh/page.tsx",
+        "deploymentSha1": "d59db0c9977213adfe0dbd6611814aeacfe9c906",
+        "gitBlobSha256": "aae65e43902a3dc23fe116037b0c548aa7ab0c1e4f61a276f97ed2689d3402cc"
+      },
+      {
+        "path": "src/app/rh/treinamentos/page.tsx",
+        "deploymentSha1": "6e173895a92be35f2c83d962c71b9e505122b08b",
+        "gitBlobSha256": "b6bb4ca77f345840331fc3d8974b676c4043563ed800ff795b8f70405096cd29"
+      },
+      {
+        "path": "src/components/EnvironmentBanner.tsx",
+        "deploymentSha1": "34e1e9d3fa35d930607e33f904aa1bf71f4e38ee",
+        "gitBlobSha256": "c4088a0daf698e79941dc94550e824c97805d751c8e9cf4d1dd8b8dc04f55432"
+      },
+      {
+        "path": "src/components/data-table/DataTablePageSize.tsx",
+        "deploymentSha1": "9bb9be49a8f93a33a07089f381f7507bb70d4360",
+        "gitBlobSha256": "68755d164ab7f9859d9c06d7e7c1343c02af18444f981226a12c758e684c1e4b"
+      },
+      {
+        "path": "src/components/data-table/DataTablePagination.tsx",
+        "deploymentSha1": "703625c60e4b1a812c02af2ddfd7f126a6ed07e4",
+        "gitBlobSha256": "0a98b1daf5e8d9ff6eca635c0c9259470b1ddd0304cec09e49f4413e166c4e45"
+      },
+      {
+        "path": "src/components/data-table/SortableTableHeader.tsx",
+        "deploymentSha1": "35b4e028c3b7d15f7be5c04e80154a8c3a7769b0",
+        "gitBlobSha256": "88ea61d59a2eb4022cff6185424403459017381918f1299314320de2d8db7441"
+      },
+      {
+        "path": "src/components/data-table/index.ts",
+        "deploymentSha1": "a0d9f2210e491bafecf66fd1b58936e799ea0f78",
+        "gitBlobSha256": "c74a8db78e42e8c381f9f1c1db14d0dddf1cedc757a19937ce9bd93d86b910c7"
+      },
+      {
+        "path": "src/components/filters/ActiveFilters.tsx",
+        "deploymentSha1": "be6b3887e396e1492ccebe4b4e3cd249933041c2",
+        "gitBlobSha256": "03edd8f1189ce9a98283718881f3b75e0f8474a2ac4d43f3eaf3fbbb8e954620"
+      },
+      {
+        "path": "src/components/filters/BooleanFilter.tsx",
+        "deploymentSha1": "1851b19b40bf771cb752ee93a73cf76fbd1582df",
+        "gitBlobSha256": "1300728dca46786881ad0752375731675244ad358c49d14f9ac950fec1432deb"
+      },
+      {
+        "path": "src/components/filters/CompetenceFilter.tsx",
+        "deploymentSha1": "080ee9f1ff911d5b129e1f7eeedfe4b9c985b25d",
+        "gitBlobSha256": "1fee065e792fdd5589a908cd2a988940a8cb82c7bb78d7cbf4df82298d18e7e6"
+      },
+      {
+        "path": "src/components/filters/DateFilter.tsx",
+        "deploymentSha1": "426eb4c0c42e378a4915b8b9a13b6c42a71ab955",
+        "gitBlobSha256": "a6d82243fc123929e810dd8bc9cdf6b24b9792a583fbc18fee188dbc4bd1c8c5"
+      },
+      {
+        "path": "src/components/filters/DateRangeFilter.tsx",
+        "deploymentSha1": "62b1fa4957bf10644552a76855ed67f390f115cf",
+        "gitBlobSha256": "1b20aea3a6934cb86e6ae6e02fa82aa6d47d3804c5b48e524f39f756d6e7040f"
+      },
+      {
+        "path": "src/components/filters/FilterBar.tsx",
+        "deploymentSha1": "a34211015bbdbc58a1546ba6c10936acb2897429",
+        "gitBlobSha256": "ffb71fa1b013f5d8ddc048ab88d08c7546219f60bc5c281e1d87bb253e886fb4"
+      },
+      {
+        "path": "src/components/filters/MultiSelectFilter.tsx",
+        "deploymentSha1": "91cd7bbbbc9cc4cf79957561747c3eee8cdab5e0",
+        "gitBlobSha256": "f39d92079c35412d601e624406ac35f80d0de103907fe93663deb2af24f33144"
+      },
+      {
+        "path": "src/components/filters/NumberFilter.tsx",
+        "deploymentSha1": "3b740940fc03a3e99de49ab62108c2c48c44134e",
+        "gitBlobSha256": "e5d31b55b02a651a60efd21c5c8c2b480ccadeae3dea594dac34983acd448e98"
+      },
+      {
+        "path": "src/components/filters/NumberRangeFilter.tsx",
+        "deploymentSha1": "115296c7f98073619ca8eaf0393aa9fcae861cb5",
+        "gitBlobSha256": "4cda6479a0eff3a87b688c616f085be598c59d472e63577c19c81e8f3ce4dc77"
+      },
+      {
+        "path": "src/components/filters/SearchFilter.tsx",
+        "deploymentSha1": "9182637242305945da7834edc1361170c4568316",
+        "gitBlobSha256": "ff8f55e31714c33153ae5ede4af2007fc8ef74983d4ad87c8e6e6d56b68bdd9e"
+      },
+      {
+        "path": "src/components/filters/filter-utils.ts",
+        "deploymentSha1": "43258f77c73826db8b84cecb4bb6a352b6cc8521",
+        "gitBlobSha256": "848bf0f4e95b8ba4c4386d022048f1d01853c2e4110e931575d963b7a4d10e91"
+      },
+      {
+        "path": "src/components/filters/filterStyles.ts",
+        "deploymentSha1": "93765027342e00c2998573a8c4f806654daf5016",
+        "gitBlobSha256": "39286a7d62ab7db215c99e6ffdc132a77e343250e055db792a47a734bea5ff72"
+      },
+      {
+        "path": "src/components/filters/index.ts",
+        "deploymentSha1": "50fff2d91b3eddaa0d95215831194881dcf99fac",
+        "gitBlobSha256": "47c513440b6048712b7ba0da9b9af343d23fd4a110c8c5e38819cb0d1b97ebe7"
+      },
+      {
+        "path": "src/hooks/useFilterSearchParams.ts",
+        "deploymentSha1": "1d2bf0efddc48502a3cd9b9713b0518b45d605af",
+        "gitBlobSha256": "42f5c76a3aee4103f6c6a6a2bfca769b31e8f285d4280e58c421615c22051344"
+      },
+      {
+        "path": "src/lib/deployment-environment.d.mts",
+        "deploymentSha1": "56bc128508aa58cd7b1ce396769cc74bf53f1122",
+        "gitBlobSha256": "a52c3917ae321860b6bacce1d2321f863853487de6dd522e30b2cb474de5ee45"
+      },
+      {
+        "path": "src/lib/deployment-environment.mjs",
+        "deploymentSha1": "9809a7722171daaddbca2c9b92bd264b532a4462",
+        "gitBlobSha256": "d9ae56c33a6a2b1ac4e1b5ce4456bd6d1b41665ff681fbcf026e4cc39f223b6a"
+      },
+      {
+        "path": "src/lib/environment.ts",
+        "deploymentSha1": "a005152d31c92df3018dc038bcd997a27c35c50d",
+        "gitBlobSha256": "3d8523b1a43121f525016bb9f94d46eb240ede47322c58172a496314943bd9dd"
+      },
+      {
+        "path": "src/lib/filters/search-param-utils.ts",
+        "deploymentSha1": "5ce7b9495aec26ea4ceee8962f9466a13a881e33",
+        "gitBlobSha256": "193b8c0794fdd45a459831e007862bcac8d27a7a57cd0be1d19c6283739e44a7"
+      },
+      {
+        "path": "src/lib/supabase/admin.ts",
+        "deploymentSha1": "b2598b6cb7c4218765bdba7968ea51535f0d3fc3",
+        "gitBlobSha256": "6b5f6874956cd498a4857c9c89c87d0d664b8570cffd4b486d425f54bf78b241"
+      },
+      {
+        "path": "src/lib/supabase/client.ts",
+        "deploymentSha1": "e8fefa3a64c8bc8ed930ba54c275a97d2700f008",
+        "gitBlobSha256": "a80b3f28e0c33ff5b57ede667fd1654b0646a13261b42ae7321db6bbd5766897"
+      },
+      {
+        "path": "src/lib/supabase/config.ts",
+        "deploymentSha1": "ffad89f9468c9f3b623282cdfb1b12e9c1f5edab",
+        "gitBlobSha256": "5ead715e8fc387fd039c60afec926cbb1f814aa94c197ce205f2662ff323413c"
+      },
+      {
+        "path": "src/lib/supabase/server.ts",
+        "deploymentSha1": "a9e4f1ed6bf1da206f21372e90abc060224dea19",
+        "gitBlobSha256": "71e13408290d63ce5a8dcb4f52442d9d93fb495102d2636ac71951ee906a9eec"
+      },
+      {
+        "path": "src/lib/supabase/types.ts",
+        "deploymentSha1": "bc1a7644feb1150fa7b60295c0d9be726eb23ed1",
+        "gitBlobSha256": "45a426f0b70bedd667f31e248883a258a312463479b282eb358c3ebab1110280"
+      },
+      {
+        "path": "src/modules/hr/components/AppShell.tsx",
+        "deploymentSha1": "61a0481704de5769356f00607151e65710431b9e",
+        "gitBlobSha256": "198a1f524b419efe6f4964f7a80907654928bd07bd184dd50ff0fef0953803e4"
+      },
+      {
+        "path": "src/modules/hr/components/AuditTimeline.tsx",
+        "deploymentSha1": "731da729c2d42b3132aafba68026ddbfc63be50d",
+        "gitBlobSha256": "20733ad9adc787c15c9b61f4b24d586d440c9de757f67377780e8ac9f09756d5"
+      },
+      {
+        "path": "src/modules/hr/components/AuthGate.tsx",
+        "deploymentSha1": "bbe4be31b45092de87a22f9f6eda8bf8b07db3f9",
+        "gitBlobSha256": "4e61b1ee5ba47a843446a5a04100b9de9cfc9a8222fbeb977ba71f99f70da261"
+      },
+      {
+        "path": "src/modules/hr/components/CostReferenceSummary.tsx",
+        "deploymentSha1": "dc70df99eb3b97f98936fc18de8a235553f133a7",
+        "gitBlobSha256": "fc3acb2a8ef3de1a5fd293ee61df1d36e3deb11ee2295a7405a2f67a9455b92f"
+      },
+      {
+        "path": "src/modules/hr/components/CurrentUserMenu.tsx",
+        "deploymentSha1": "52e6a2ff6e4a1043832121aad63d79021767c844",
+        "gitBlobSha256": "81e46134033307bb3160dc817f97be69e7b8798b64ce6f6c031529ed2d0e0e53"
+      },
+      {
+        "path": "src/modules/hr/components/CustomFieldRenderer.tsx",
+        "deploymentSha1": "9196a68073a16592ddfe76314f2e1bcf9acaacc7",
+        "gitBlobSha256": "c82893a5313b5827bf1849e5981c1dbea54e730c2e39a34fa18824f7cb65d230"
+      },
+      {
+        "path": "src/modules/hr/components/DailyOccurrenceReportPanel.tsx",
+        "deploymentSha1": "afe50acaf64622b16422634c03eecdf86a5baf7d",
+        "gitBlobSha256": "5166af80c7adaaa014a371004b12b4be17a02fdb798325344e1886c05c583146"
+      },
+      {
+        "path": "src/modules/hr/components/DashboardCharts.tsx",
+        "deploymentSha1": "500da1d2f3f0ecd7d1f2b4a7f4cba69c0318a512",
+        "gitBlobSha256": "d83fc642fefa4e86a5bf7dacec95f9703727ab9578ed2eb8692b9d29cff5c908"
+      },
+      {
+        "path": "src/modules/hr/components/DataTable.tsx",
+        "deploymentSha1": "e7b50a4dd07e6570a72e6b3a5f66858e566e0ff4",
+        "gitBlobSha256": "5b848b83411148f304fab8cd248463df96d097975740e41072639086b1c6b192"
+      },
+      {
+        "path": "src/modules/hr/components/DrawerForm.tsx",
+        "deploymentSha1": "bcf7cb56de846a8a8e6ca06f75930a9713922ca1",
+        "gitBlobSha256": "80302d39e8bb80f460e1df5d50130e3e80ec670a223fd0d9e8be7736281b569d"
+      },
+      {
+        "path": "src/modules/hr/components/EmployeeDependentsPanel.tsx",
+        "deploymentSha1": "06543d3db79e92f29b4f01b5a43cbb25127df155",
+        "gitBlobSha256": "2dff030c0ffec6d7b76a398a2be8041b34b225d7328a6fb2f55cd884a8655c8b"
+      },
+      {
+        "path": "src/modules/hr/components/EmployeeForm.tsx",
+        "deploymentSha1": "3e9c40b0714c7ce0803007af5e8ae80f80168c01",
+        "gitBlobSha256": "17e2591c8f8ac2fd14e12efa74e63f9f9b964404f2d2545dff3c5423d0d33d8f"
+      },
+      {
+        "path": "src/modules/hr/components/EmployeeLaborCostsPanel.tsx",
+        "deploymentSha1": "1e015a5b9aed53afbe51f44f0c576c494b8ea258",
+        "gitBlobSha256": "ea6251af21b6546676e7dd7e927d04dfa5a98dcbb99d6b53930a171fb286c601"
+      },
+      {
+        "path": "src/modules/hr/components/EmployeeMovementForm.tsx",
+        "deploymentSha1": "f604b4be55b6b8b8c854fa866821b28601bdaebd",
+        "gitBlobSha256": "221460bf1fef2cf09cc54b5c7cd7a060ad63fd61d374dbd6fe3a83453e5c56b4"
+      },
+      {
+        "path": "src/modules/hr/components/EmployeeMovementsPanel.tsx",
+        "deploymentSha1": "425a448323a0f32e1e3685eff3fa8e9d0271124d",
+        "gitBlobSha256": "75d17e00306dca29e9a947c565f3409f7971202c841bf9f540f23f6869d2b096"
+      },
+      {
+        "path": "src/modules/hr/components/EmptyState.tsx",
+        "deploymentSha1": "b9b31662bad4021a8f01de8b83086f08e5d60702",
+        "gitBlobSha256": "b665ab182d955cec4c5dd0c5c097acc03937c4d0b7d3adfc90807c4ba7695735"
+      },
+      {
+        "path": "src/modules/hr/components/ErrorState.tsx",
+        "deploymentSha1": "d99c697ca6a276d17daffb0724b976597cc49e17",
+        "gitBlobSha256": "356878ab6dc19218e4ba8706907df76331738339f77dfaaa344229b85e0b2659"
+      },
+      {
+        "path": "src/modules/hr/components/FileUploadField.tsx",
+        "deploymentSha1": "8cf0701f32e4a9ee73f7cebd9cfacff8e75a6f0e",
+        "gitBlobSha256": "f07e411e4da8678792ed25921938118b03e8b3d55cffaa9a9ebe63cae709cc38"
+      },
+      {
+        "path": "src/modules/hr/components/FilterBar.tsx",
+        "deploymentSha1": "bf23741f58bde1395b1d9c7d21b63c1355de2146",
+        "gitBlobSha256": "a0007f2a9a6d28711bb6039c98d3d259b9d7457b7d480b427261057ae5fdf2dc"
+      },
+      {
+        "path": "src/modules/hr/components/FormField.tsx",
+        "deploymentSha1": "68178049c3b46681f93e182f2944ccaa916035c2",
+        "gitBlobSha256": "98301766de393027a9fb7a782dcb24296e58797096e4afc053721c394535cf75"
+      },
+      {
+        "path": "src/modules/hr/components/LaborCostDashboardPanel.tsx",
+        "deploymentSha1": "0a36bd0b636a8ca79178112076f0599c6921f6eb",
+        "gitBlobSha256": "9cfaa8633d31b948db36edc9f8e4e791277ff4b39b2ca204edd159d47ef79234"
+      },
+      {
+        "path": "src/modules/hr/components/LaborCostSettingsPanel.tsx",
+        "deploymentSha1": "0d334b7c94adb449893082bda54f6081cc0948d9",
+        "gitBlobSha256": "be8a56e87b4a76fdda0b9faf098b581e65b648ea7dcaac2a541d7a431fe2560e"
+      },
+      {
+        "path": "src/modules/hr/components/LoadingState.tsx",
+        "deploymentSha1": "2a6b455789048418497c258c665bd63f3b9b809d",
+        "gitBlobSha256": "a9140f0195e6f22665af6ffbad4d1ec8675a18bdc7529293feeb1841d8693543"
+      },
+      {
+        "path": "src/modules/hr/components/MetricCard.tsx",
+        "deploymentSha1": "4108067488eb0d5ec0d8d64ea5099c91797b3283",
+        "gitBlobSha256": "9c6ec4f8804e68c19c00cb81f89be6c281d56c0e265b97c02963aa831d9429b1"
+      },
+      {
+        "path": "src/modules/hr/components/MonthlyOccurrenceReportPanel.tsx",
+        "deploymentSha1": "ab28104191602e2fdef76e41329dcb8c0d9977af",
+        "gitBlobSha256": "f545908a732cea21cd68e750263262043795ea06c36d33f863c42070ee772ff8"
+      },
+      {
+        "path": "src/modules/hr/components/MultiSelectFilter.tsx",
+        "deploymentSha1": "7be6749c33844556430fe6ab7bb4a734664409e1",
+        "gitBlobSha256": "aec3e4d5003aa75dca90d1f1e2d9083b68f7b2bf3e2b025c2662bc04b2e0a4cf"
+      },
+      {
+        "path": "src/modules/hr/components/NotificationsBell.tsx",
+        "deploymentSha1": "ad4942f29757497dfb9747f0babff583ae5a1a66",
+        "gitBlobSha256": "9e44b3759b30c356acf66c0c04aa8da34f3cb26afe2d25dd5a9b181489e70f69"
+      },
+      {
+        "path": "src/modules/hr/components/OccurrenceRankingReportPanel.tsx",
+        "deploymentSha1": "9900a7aaf97efcf9a3ee800a83097a94a2cff582",
+        "gitBlobSha256": "397033b7720d2169bb9c5f543c8db7dbbb0d43602bade0b4eb7bba0425f22bd7"
+      },
+      {
+        "path": "src/modules/hr/components/PageHeader.tsx",
+        "deploymentSha1": "dd7710f61c93e1b4d38a794fa73102a51205f41e",
+        "gitBlobSha256": "d55ab0e8188a59b7be01baebc131b830c789cd8214ca0d43a7a4bf77eb73b8c9"
+      },
+      {
+        "path": "src/modules/hr/components/PermissionMatrix.tsx",
+        "deploymentSha1": "373e06bd156938f3cdd03ab37446b5ef68c0c8aa",
+        "gitBlobSha256": "d6eb46d0c31d1276d16eeb3edcd6cbbf966217e7576169869b0ccad7470ce756"
+      },
+      {
+        "path": "src/modules/hr/components/SectionCard.tsx",
+        "deploymentSha1": "f5fbf35a6c9fa5c5f7ba82f5845acecac1a0cc3e",
+        "gitBlobSha256": "e8bab3f30aaebb8ae287d9d3ba253dd0987ade475b00038f560a94e8a1d06ce4"
+      },
+      {
+        "path": "src/modules/hr/components/SignedDocumentLink.tsx",
+        "deploymentSha1": "72174fcad2e8c51a4e64eb286eeb63a233365466",
+        "gitBlobSha256": "58bf4a9c79962378bb69a1549e89f3ea5af59789be7b1bb209eff1706370cd88"
+      },
+      {
+        "path": "src/modules/hr/components/StatusBadge.tsx",
+        "deploymentSha1": "922dc0c6afce8fb4d315d04f531ae465ff0b698c",
+        "gitBlobSha256": "7c52d169af72d56a326d879200c9fbe298dc9ac8d741741944ef9399651e7be1"
+      },
+      {
+        "path": "src/modules/hr/components/SystemUsersPanel.tsx",
+        "deploymentSha1": "94f680793ebeccacb396abaffdce34dbeaf39194",
+        "gitBlobSha256": "dd8035f715621e0c4a2557a908faeb3d512cfcb50108a09a651ade79c2d69c30"
+      },
+      {
+        "path": "src/modules/hr/components/Tabs.tsx",
+        "deploymentSha1": "ce05a0363af54e8e46be52b0278222a44db929a1",
+        "gitBlobSha256": "5b2122e1e3697cecf66ced6619a9c29b97afb08c550f1be43df14efcdad71da0"
+      },
+      {
+        "path": "src/modules/hr/hooks/useAsyncResource.ts",
+        "deploymentSha1": "49334d38ba2c359e277eda6faee0121db2a5e196",
+        "gitBlobSha256": "b3cf7b987f8a0e5ca522eebd5bbc9120423cfb855a51d1d20a7b14d7e87398cc"
+      },
+      {
+        "path": "src/modules/hr/pages/AccountPasswordPage.tsx",
+        "deploymentSha1": "1c4f83c508a3f428c5cba6382b117b4f8ea74e6f",
+        "gitBlobSha256": "af0f2e09edb38f3035159e022817091ea3ad7544e3c5996129d3c5050a7b0aa0"
+      },
+      {
+        "path": "src/modules/hr/pages/DashboardPage.tsx",
+        "deploymentSha1": "e3ec77fff1bf94b1c8d7ab9101b97fc6e2bd7f5e",
+        "gitBlobSha256": "1468d558125365f2b71113afb21d8d2e799906d6efb77f5609c64b69fe5656c2"
+      },
+      {
+        "path": "src/modules/hr/pages/DocumentsPage.tsx",
+        "deploymentSha1": "7a851926c2db70114e0e3f34b53a7f5d9c20bf73",
+        "gitBlobSha256": "1b6c23917e063a16366a90b1c52ae3796e419ac4b7b7e355cc77df114a98f25e"
+      },
+      {
+        "path": "src/modules/hr/pages/EmployeeProfilePage.tsx",
+        "deploymentSha1": "f20e91d4a2be425e5bd3e69ef2f5ff263df03f95",
+        "gitBlobSha256": "9a1e1aca0b186c8b31ba2967313834348d4af0a90d28678f00055051b0806165"
+      },
+      {
+        "path": "src/modules/hr/pages/EmployeesPage.tsx",
+        "deploymentSha1": "fc320c2334e6d5b351b177201404150095f41ab6",
+        "gitBlobSha256": "0e95e5cacf86c73b06a2f2a98d0916abae8b04c1d1a6f43bb155afe12abed990"
+      },
+      {
+        "path": "src/modules/hr/pages/HrSettingsPage.tsx",
+        "deploymentSha1": "c8c75d2bb839bbe6523367f371c355aaee92daeb",
+        "gitBlobSha256": "b6dbc16654ae5ae7325095810ee2ddde8705fb92eaa15c4535a2f863fcbda65e"
+      },
+      {
+        "path": "src/modules/hr/pages/LoginPage.tsx",
+        "deploymentSha1": "63c8df26f4c290e8e6809f9457fc0603b527f1d3",
+        "gitBlobSha256": "c8ca9d5362c219aee9c1f57b4894fa9b3697e09cf98f6ad8cc4e993bd218b629"
+      },
+      {
+        "path": "src/modules/hr/pages/MovementsPage.tsx",
+        "deploymentSha1": "3aa9646c6d90819d4f3de92e8f92660630b62ffa",
+        "gitBlobSha256": "abe93b53e1fe51951dcbbcb4571c81511f7b4a866e68b28bd0438faeaf039bcf"
+      },
+      {
+        "path": "src/modules/hr/pages/OccurrencesPage.tsx",
+        "deploymentSha1": "2639517ebf9c39b223ed5e722bbefad7a28f0a95",
+        "gitBlobSha256": "9ed7fa2eccd24a65bcff5fbab5ce88ce1341ed63d385a5e57961d6c3bfcd5f39"
+      },
+      {
+        "path": "src/modules/hr/pages/PayrollPage.tsx",
+        "deploymentSha1": "957b5daccf5fd4ee8d846154b178d18fcd745dea",
+        "gitBlobSha256": "7730f68a41cf66ef3d3d43be0afd82c9ee8f5394b6e1d4c26c262c4612f0eb86"
+      },
+      {
+        "path": "src/modules/hr/pages/SignupPage.tsx",
+        "deploymentSha1": "0e156c8a022d6d57eafa7a0e454517976482710a",
+        "gitBlobSha256": "84d2adec6f4fe1b54e912e59bb0112e53d0f9df7aae2bd14027b376c79488124"
+      },
+      {
+        "path": "src/modules/hr/pages/TimeOffPage.tsx",
+        "deploymentSha1": "94c87c05cfc78c61a47e3ed254615d12b2ceb78f",
+        "gitBlobSha256": "53e2be1f9fec93a5a548bfc891f75a7503c7917517826d60c6a53a76261bf7cd"
+      },
+      {
+        "path": "src/modules/hr/pages/TrainingsPage.tsx",
+        "deploymentSha1": "3fc1a8aa535270e2e5e86a9a21c72ed5db350a5c",
+        "gitBlobSha256": "85e4fa8f7d903c7e87ba1dc4b14eb42a86529a7e39a78eb31bfd7e869dcb8b48"
+      },
+      {
+        "path": "src/modules/hr/services/audit.service.ts",
+        "deploymentSha1": "a874cb2df0f0e375fb092fd34a7aeb9a746045cb",
+        "gitBlobSha256": "61a058485e4b0d98612fa8a2dd338841cdb04526c400df92db4adbc47f26ef6d"
+      },
+      {
+        "path": "src/modules/hr/services/auth.service.ts",
+        "deploymentSha1": "2563d22be4e9009b7768aeeb3f96e453c5d6270b",
+        "gitBlobSha256": "546c305e728b8c98e75385eb7212ee9f5dbd5ab1f35c6c841dcdcc7f1792833b"
+      },
+      {
+        "path": "src/modules/hr/services/cost-components.service.ts",
+        "deploymentSha1": "226640442f8cba566a0f4183589e0189eb85aba3",
+        "gitBlobSha256": "769e6801cdd5892c38767178a5ad20a8dc556c6725aaf10ac4fd87be811df5ea"
+      },
+      {
+        "path": "src/modules/hr/services/daily-occurrence-report.service.ts",
+        "deploymentSha1": "b021d07632dd828f30f3fdbddf6e1cb65fe960bf",
+        "gitBlobSha256": "84fcff3702555e16a16f9928d8eb5d5a1f0242851cdde4f48fb5943448a9972f"
+      },
+      {
+        "path": "src/modules/hr/services/dashboard.service.ts",
+        "deploymentSha1": "81d7841da83723c06f5d60e761d64c3cbc9055a5",
+        "gitBlobSha256": "53237a09854b195c889918bc96849623ed023566da753d627fd484c53cc94717"
+      },
+      {
+        "path": "src/modules/hr/services/dependents.service.ts",
+        "deploymentSha1": "026f708a016bf93eded0ddb0f658adcdace30cd5",
+        "gitBlobSha256": "25f91caeb88f389d70f007b127b9c33bb9bdb9e776a83c6b8ef02bdf0a77d977"
+      },
+      {
+        "path": "src/modules/hr/services/documents.service.ts",
+        "deploymentSha1": "ab0c91a17d43bee43ef9d0c706bf15e190dda8bf",
+        "gitBlobSha256": "a463598939c6bbb620cc08fe75b371d1fd8c9b7004dd8c60af61203ddb5bdae1"
+      },
+      {
+        "path": "src/modules/hr/services/employees.service.ts",
+        "deploymentSha1": "173b638e4d63faf6c5d1e92406d6457eed407074",
+        "gitBlobSha256": "a5fb40427dd28db2aff63d6c85086f552e37da702761cb0e9096c9150d200ffc"
+      },
+      {
+        "path": "src/modules/hr/services/hr-dashboard.service.ts",
+        "deploymentSha1": "a1ccfead37a319c6a9d175d5ad2b10ef6cffcdf0",
+        "gitBlobSha256": "c3111d771834fe21272f2c4dfe290a86e38e9035a6e93d7f638480e89e4dd702"
+      },
+      {
+        "path": "src/modules/hr/services/imports.service.ts",
+        "deploymentSha1": "9cfe8cecdafe8d43d331e08cdf9e771d9f7fe45d",
+        "gitBlobSha256": "360fd1c28df7e6d00ddd5aa6577fc53396b0b380a9c9c27f06e7a98d0263e6ab"
+      },
+      {
+        "path": "src/modules/hr/services/labor-costs.service.ts",
+        "deploymentSha1": "b910bc9895ae496c95b4120828e1143d2ca367df",
+        "gitBlobSha256": "fc0437208787f966514dff1f2842cfc18b87c6815bd2fd87d3c55f74523d3bd9"
+      },
+      {
+        "path": "src/modules/hr/services/monthly-costs.service.ts",
+        "deploymentSha1": "169a1bed02cadd30f1236060ac8ae7c5f6564f10",
+        "gitBlobSha256": "a3d5ff930e82f877273cb86d8a885bcac937ac279d192ebd179ff97739513608"
+      },
+      {
+        "path": "src/modules/hr/services/monthly-occurrence-report.service.ts",
+        "deploymentSha1": "b8d3e05614e0ed7884555f4dbbf6968534c5e646",
+        "gitBlobSha256": "737076ea9bf7d76e437dd39c1cfbb3358ba2f259b3b0385825bca2418049564b"
+      },
+      {
+        "path": "src/modules/hr/services/movements.service.ts",
+        "deploymentSha1": "f2892a78c94fab92fa62037ad2be1a2313f3625d",
+        "gitBlobSha256": "7861928ba7057b48b6d9c5030ab1f0c1973d9be89a441e61ff69eaf704b7a65a"
+      },
+      {
+        "path": "src/modules/hr/services/notifications.service.ts",
+        "deploymentSha1": "23f6ff716d9704d5e95866340278c3cdc33a8a44",
+        "gitBlobSha256": "192a1913b818e0074d6fcc9462bdce3660a8b6a38c952d332fd0f3e496937b5a"
+      },
+      {
+        "path": "src/modules/hr/services/occurrence-ranking-report.service.ts",
+        "deploymentSha1": "a4d3ece45d8d4ed2ec5764c15425d637d80ac9e2",
+        "gitBlobSha256": "563255cf5cf15865b1ed5569789469893fda675fcaa97b82cf8717b03db4479d"
+      },
+      {
+        "path": "src/modules/hr/services/occurrences.service.ts",
+        "deploymentSha1": "b8fd0e48d7fee301787cbab4f28f2b9845ea0ae4",
+        "gitBlobSha256": "e6caa793e9581caf17ad0f417c3e2dd2d9a1a2df8dd64bb2bae71f73a51997f7"
+      },
+      {
+        "path": "src/modules/hr/services/permissions.service.ts",
+        "deploymentSha1": "5283dd6e700dd9a8b63797fd9a9a3fee91438cbe",
+        "gitBlobSha256": "533e73e0443642e28b0e2d661e96211811ec0770e7f046722d97c3b09862f3b2"
+      },
+      {
+        "path": "src/modules/hr/services/service-utils.ts",
+        "deploymentSha1": "715846263906ba959c95bd721df5c90000eb2aa1",
+        "gitBlobSha256": "e64d097d946e47c92a7f8d4374cde2bdbc3bfe6aa423e715d2334f2f0a96ed3b"
+      },
+      {
+        "path": "src/modules/hr/services/settings.service.ts",
+        "deploymentSha1": "547c8ec9aea7214ac2310c25519700d6d315bd71",
+        "gitBlobSha256": "fde62c94e912d30b83b527e10f3fb8ca8d7be7ea1af87ff32f08fb840503f309"
+      },
+      {
+        "path": "src/modules/hr/services/trainings.service.ts",
+        "deploymentSha1": "266bd8402ac2f5b802279ff29fc4eebaf53c88f7",
+        "gitBlobSha256": "c0f677729d286c815393f545d2dc7cc716b9d86174b4589454d1896eeda194c8"
+      },
+      {
+        "path": "src/modules/hr/services/vacations.service.ts",
+        "deploymentSha1": "a17895814e04add1c7ccf58c90e01db07e25080f",
+        "gitBlobSha256": "fcc87c4c51385c726d5e7ea0ec0953128d2833ae9ef8c0f27900fd2556d5de4a"
+      },
+      {
+        "path": "src/modules/hr/types/index.ts",
+        "deploymentSha1": "0f6c3a8a42cd5befa0c1b0e98946970946fe9474",
+        "gitBlobSha256": "ea5cecaab9ca7ad74309b28d363411765318be8b013e4a807fb7ad5f700132f8"
+      },
+      {
+        "path": "src/modules/hr/utils/errors.ts",
+        "deploymentSha1": "14db059b10bc0da08f75eeed275bacde36d18e1c",
+        "gitBlobSha256": "b25c07af31b325d433b6b5aadef460ad0d5fb1cf81e93f5daae5507db4c65d07"
+      },
+      {
+        "path": "src/modules/hr/utils/format.ts",
+        "deploymentSha1": "1da0e74ab376ff1bf5f1ca9c810d8eacd87beec3",
+        "gitBlobSha256": "950a408857aefe6a9935344135bcf40e1024f4c4eca0f933de931595584d3008"
+      },
+      {
+        "path": "src/modules/hr/utils/labor-cost-calculations.ts",
+        "deploymentSha1": "aeac74413dec0edd15847b9665639a15b1041180",
+        "gitBlobSha256": "fa03a08cdd98896b859ca72883a3b87fa08e08c5a2124499f437d40a8ba63236"
+      },
+      {
+        "path": "src/modules/hr/utils/occurrences.ts",
+        "deploymentSha1": "99fe96d2d7c8ba5ef0ecee4102a3ea262c247df7",
+        "gitBlobSha256": "13bc747c4ebc065b34238c5602e7d1c241248ef1fd1f0fc98596fc8155a1b7d5"
+      },
+      {
+        "path": "src/modules/hr/utils/password.ts",
+        "deploymentSha1": "54a9632f87ce7cb38cbf148ed56b086b99a0fe9e",
+        "gitBlobSha256": "b3da63e03df34ba777394c890565e59d7dce596d43d0c37b0b25d1d48c983bdd"
+      },
+      {
+        "path": "src/modules/hr/utils/status.ts",
+        "deploymentSha1": "1b5306bfb22b8892c0a65b31496d7d045fc40643",
+        "gitBlobSha256": "4b75cf1003021ab5fff9888dc0a9431964fc2f61af204ff62a1b8aeb7ee90b79"
+      },
+      {
+        "path": "src/modules/hr/utils/turnover-calculations.ts",
+        "deploymentSha1": "6769bcdeae3cd340dffd75969f4a6ffc183b74a2",
+        "gitBlobSha256": "3294462809f77efcc4c04f745dcf565d16dc5ec0a48b66682b413e9fd7290871"
+      },
+      {
+        "path": "src/modules/hr/utils/validation.ts",
+        "deploymentSha1": "29f08c89522e80725e0871714b4a028a65119443",
+        "gitBlobSha256": "413f304d4e3bc3ddd2263d80397c053744d0b1da1b76d23466d5727be46e2dbf"
+      },
+      {
+        "path": "tsconfig.json",
+        "deploymentSha1": "27dded29dc880f958ee67c9ed276fb2b1412f515",
+        "gitBlobSha256": "5c51df4c59f4510d8c7dadf07a5c32132228826a3b331da5e286207b4df7ef9c"
+      }
+    ]
+  }
+}

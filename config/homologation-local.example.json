@@ -1,0 +1,7 @@
+{
+  "NEXT_PUBLIC_APP_ENV": "homologation",
+  "NEXT_PUBLIC_HOMOLOGATION_SUPABASE_REF": "rcoqywqyjcxdzchojxzs",
+  "NEXT_PUBLIC_SUPABASE_URL": "https://rcoqywqyjcxdzchojxzs.supabase.co",
+  "NEXT_PUBLIC_SUPABASE_ANON_KEY": "",
+  "NEXT_PUBLIC_APP_URL": "http://localhost:3000"
+}
