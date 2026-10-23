@@ -47,3 +47,25 @@ test("monthly PDF handles empty data and many distinct rows", async () => {
   assert.ok(pages.join("\n").includes("fixtureline registro 99"));
   assert.ok(pages.every((page) => page.includes("IDENTITY-QA")));
 });
+
+test("filters can span several pages without losing the last selection or report data", async () => {
+  const report = fixture();
+  report.filters.employeeName = Array.from({ length: 1200 }, (_, n) => `FILTER-${String(n).padStart(4, "0")} Nome extenso para pesquisa`).join(", ");
+  const doc = await createMonthlyOccurrenceReportPdf(report);
+  const pages = doc.internal.pages.slice(1).map((page) => page.join("\n"));
+  assert.ok(pages.length > 3);
+  assert.ok(pages.join("\n").includes("FILTER-1199"));
+  assert.ok(pages.at(-1).includes("fixtureline registro 0"));
+  assert.ok(pages.every((page) => page.includes("Concept21 Aluminium")));
+});
+
+test("long names, Portuguese accents and unbroken text survive PDF rendering", async () => {
+  const report = fixture();
+  report.rows[0].employeeName = "João Gonçalves — TESTE ".repeat(7).replaceAll("—", "-");
+  report.rows[0].justification = "Ação, férias, avaliação e justificativa. " + "ABCD".repeat(300) + " END-OF-SUMMARY";
+  const doc = await createMonthlyOccurrenceReportPdf(report);
+  const contents = doc.internal.pages.slice(1).map((page) => page.join("\n")).join("\n");
+  assert.ok(contents.includes("João"));
+  assert.ok(contents.includes("END-OF-SUMMARY"));
+  assert.equal(report.summary.occurrenceCount, 1);
+});

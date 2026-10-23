@@ -1,3 +1,4 @@
+import { normalizeDocumentRejectionReason } from "@/modules/hr/utils/document-rejection";
 import { createAuditLog, createEmployeeHistoryEvent } from "@/modules/hr/services/audit.service";
 import { ensureCurrentUserIsMaster } from "@/modules/hr/services/auth.service";
 import { getHrSupabaseClient } from "@/modules/hr/services/service-utils";
@@ -326,6 +327,7 @@ export async function approveEmployeeDocument(documentId: ID) {
 }
 
 export async function rejectEmployeeDocument(documentId: ID, reason: string) {
+  const normalizedReason = normalizeDocumentRejectionReason(reason);
   const supabase = getHrSupabaseClient();
   const user = await supabase.auth.getUser();
   const { data, error } = await supabase
@@ -334,7 +336,7 @@ export async function rejectEmployeeDocument(documentId: ID, reason: string) {
       status: "rejected",
       rejected_by: user.data.user?.id,
       rejected_at: new Date().toISOString(),
-      rejection_reason: reason,
+      rejection_reason: normalizedReason,
       updated_by: user.data.user?.id,
     })
     .eq("id", documentId)

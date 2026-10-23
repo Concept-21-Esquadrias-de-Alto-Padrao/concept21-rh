@@ -55,6 +55,10 @@ export function DocumentsPage() {
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [rejectionDocument, setRejectionDocument] = useState<EmployeeDocument | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [rejectionError, setRejectionError] = useState<string | null>(null);
+  const [rejecting, setRejecting] = useState(false);
   const { data, loading, error, reload } = useAsyncResource(loadDocumentsPageData);
 
   const columns = useMemo<Array<DataTableColumn<EmployeeDocument>>>(
@@ -123,18 +127,11 @@ export function DocumentsPage() {
             </button>
             <button
               type="button"
-              onClick={async () => {
-                const reason = window.prompt("Motivo da recusa");
-                if (reason) {
-                  setActionError(null);
-
-                  try {
-                    await rejectEmployeeDocument(document.id, reason);
-                    await reload();
-                  } catch (rejectError) {
-                    setActionError(toUserFriendlyErrorMessage(rejectError, "Não foi possível recusar o documento."));
-                  }
-                }
+              disabled={rejecting}
+              onClick={() => {
+                setRejectionDocument(document);
+                setRejectionReason("");
+                setRejectionError(null);
               }}
               className="grid h-9 w-9 place-items-center rounded-md border border-zinc-200 text-zinc-600 transition hover:border-red-200 hover:text-red-600"
               title="Recusar"
@@ -145,8 +142,26 @@ export function DocumentsPage() {
         ),
       },
     ],
-    [reload],
+    [reload, rejecting],
   );
+
+  async function submitRejection(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!rejectionDocument || rejecting) return;
+    setRejectionError(null);
+    setRejecting(true);
+    try {
+      await rejectEmployeeDocument(rejectionDocument.id, rejectionReason);
+    } catch (rejectError) {
+      setRejectionError(toUserFriendlyErrorMessage(rejectError, "Não foi possível recusar o documento."));
+      return;
+    } finally {
+      setRejecting(false);
+    }
+    setRejectionDocument(null);
+    setRejectionReason("");
+    await reload();
+  }
 
   async function submitDocument(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -218,6 +233,32 @@ export function DocumentsPage() {
           />
         </SectionCard>
       ) : null}
+
+      <DrawerForm
+        open={Boolean(rejectionDocument)}
+        title="Recusar documento"
+        description={rejectionDocument ? `${rejectionDocument.employee?.full_name ?? "Colaborador"} — ${rejectionDocument.document_type?.name ?? "Documento"}` : undefined}
+        onClose={() => { if (!rejecting) setRejectionDocument(null); }}
+      >
+        <form onSubmit={submitRejection} className="space-y-4" aria-busy={rejecting}>
+          {rejectionError ? <p role="alert" className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{rejectionError}</p> : null}
+          <label htmlFor="document-rejection-reason" className="block text-sm font-medium text-zinc-700">Motivo da recusa *</label>
+          <textarea
+            id="document-rejection-reason"
+            className={fieldClassName}
+            value={rejectionReason}
+            onChange={(event) => setRejectionReason(event.target.value)}
+            required
+            autoFocus
+            disabled={rejecting}
+            rows={4}
+          />
+          <div className="flex justify-end gap-3">
+            <button type="button" disabled={rejecting} onClick={() => setRejectionDocument(null)} className="rounded-md border border-zinc-200 px-4 py-2 text-sm">Cancelar</button>
+            <button type="submit" disabled={rejecting || !rejectionReason.trim()} className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">{rejecting ? "Recusando..." : "Confirmar recusa"}</button>
+          </div>
+        </form>
+      </DrawerForm>
 
       <DrawerForm
         open={drawerOpen}
