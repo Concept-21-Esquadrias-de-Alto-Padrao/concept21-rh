@@ -3,9 +3,15 @@ import { test } from "node:test";
 import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { assertNoEnvFiles, assertVercelProject, projectId, teamId, validateLocalEnvironment } from "../scripts/lib/homologation-handoff.mjs";
+import { assertNoEnvFiles, assertVercelProject, normalizeSource, projectId, teamId, validateLocalEnvironment } from "../scripts/lib/homologation-handoff.mjs";
 
 const env = { NEXT_PUBLIC_APP_ENV: "homologation", NEXT_PUBLIC_HOMOLOGATION_SUPABASE_REF: "rcoqywqyjcxdzchojxzs", NEXT_PUBLIC_SUPABASE_URL: "https://rcoqywqyjcxdzchojxzs.supabase.co", NEXT_PUBLIC_SUPABASE_ANON_KEY: "sb_publishable_fake_test_only", NEXT_PUBLIC_APP_URL: "http://localhost:3000" };
+
+test("baseline comparison handles Windows declaration files without changing binary assets", () => {
+  assert.equal(normalizeSource("src/lib/environment.d.mts", Buffer.from("export {};\r\n")).toString(), "export {};\n");
+  const binary = Buffer.from([0, 13, 10, 255]);
+  assert.equal(normalizeSource("src/app/favicon.ico", binary), binary);
+});
 
 test("local runner accepts only the fixed test database and a public key", () => {
   assert.doesNotThrow(() => validateLocalEnvironment(env));

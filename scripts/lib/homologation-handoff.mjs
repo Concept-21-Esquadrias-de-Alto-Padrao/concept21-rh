@@ -5,6 +5,12 @@ export const teamId = "team_CQgXB4kvuQBOXiv4siUoGnUe";
 export const projectId = "prj_7WWMGTE7cuoJjCoF4Z2rp9YvKynv";
 export const localKeys = ["NEXT_PUBLIC_APP_ENV", "NEXT_PUBLIC_HOMOLOGATION_SUPABASE_REF", "NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY", "NEXT_PUBLIC_APP_URL"];
 
+export function normalizeSource(file, raw) {
+  return /\.(?:tsx?|mts|cts|mjs|json|css|svg)$/.test(file) || file === ".vercelignore"
+    ? Buffer.from(raw.toString("utf8").replaceAll("\r\n", "\n"))
+    : raw;
+}
+
 export function vercelApi(endpoint) {
   return JSON.parse(runCli("vercel@50.28.0", ["api", `${endpoint}${endpoint.includes("?") ? "&" : "?"}teamId=${teamId}`, "--raw", "--scope", config.vercelTeam]));
 }
