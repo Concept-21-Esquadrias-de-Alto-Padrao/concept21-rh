@@ -151,4 +151,10 @@ Se uma correção futura realmente exigir banco: apresentar SQL novo e impacto a
 
 Nenhuma correção de PDFs, regra de autorização ou férias é declarada concluída por esta transferência. A base permanece a que foi testada pelo Eduardo. Nenhum novo deployment, alteração de dados, mudança de perfil, convite de conta, migration ou mudança de produção faz parte da entrega. O compartilhamento de acesso a ferramentas depende de autorização nominal e deve permanecer separado do código.
 
+### Verificação da transferência
+
+Em 23/10/2026, um clone novo passou na comparação das 143 fontes e 32 arquivos SQL, instalação com `npm ci`, 20 testes unitários, TypeScript, ESLint e build Next.js. O runner iniciou o build local sem chave administrativa. No navegador, a conta RH fictícia entrou, Dashboard e Ocorrências carregaram, a notificação retornou envio suprimido e as chamadas Supabase observadas foram somente para o projeto de testes. O servidor temporário foi encerrado após a conferência. Essas consultas não substituem testes completos de gravação, perfis ou PDFs.
+
+`npm ci` informou **11 vulnerabilidades nas dependências: duas moderadas, sete altas e duas críticas**. O lockfile foi preservado para reproduzir o deployment; não foi executado `npm audit fix` ou atualização automática. É necessária uma triagem específica dos avisos e da exposição antes de considerar esta base uma liberação de segurança. Não promover estas alterações para produção como solução de segurança.
+
 Referências operacionais: [fontes de um deployment na API Vercel](https://vercel.com/docs/rest-api/deployments/list-deployment-files), [promoção de deployment](https://vercel.com/docs/deployments/promoting-a-deployment), [reversão](https://vercel.com/docs/instant-rollback) e [variáveis no Next.js](https://nextjs.org/docs/app/guides/environment-variables).
