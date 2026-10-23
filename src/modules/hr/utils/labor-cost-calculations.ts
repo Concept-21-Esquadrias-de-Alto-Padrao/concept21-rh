@@ -2,6 +2,7 @@ import type {
   CostCalculationType,
   CostComponent,
   EmployeeCostComponent,
+  MonthlyEmployeeCost,
 } from "@/modules/hr/types";
 
 export interface CostCalculationInput {
@@ -92,6 +93,9 @@ export function requiresManualCostInput(component: CostComponent) {
 }
 
 export function normalizeReferenceMonth(referenceMonth: string) {
+  if (!/^\d{4}-(0[1-9]|1[0-2])(?:-\d{2})?$/.test(referenceMonth)) {
+    throw new Error("Competência inválida. Use o formato MM/AAAA.");
+  }
   if (/^\d{4}-\d{2}$/.test(referenceMonth)) {
     return `${referenceMonth}-01`;
   }
@@ -221,4 +225,31 @@ export function formatPercentageBR(value?: number | null) {
 export function formatReferenceMonth(referenceMonth: string) {
   const normalized = normalizeReferenceMonth(referenceMonth);
   return `${normalized.slice(5, 7)}/${normalized.slice(0, 4)}`;
+}
+
+export function formatReferenceMonthName(referenceMonth: string) {
+  const normalized = normalizeReferenceMonth(referenceMonth);
+  const date = new Date(`${normalized}T00:00:00Z`);
+  return new Intl.DateTimeFormat("pt-BR", { month: "short", timeZone: "UTC" })
+    .format(date).replace(".", "");
+}
+
+export function summarizeMonthlyCostSnapshots(
+  costs: Array<Pick<MonthlyEmployeeCost, "employee_id" | "reference_month" | "status" | "total_company_cost" | "updated_at" | "calculated_at" | "is_active">>,
+  employeeIds: string[],
+  referenceMonth: string,
+) {
+  const ids = new Set(employeeIds);
+  const month = normalizeReferenceMonth(referenceMonth);
+  const scoped = costs.filter((cost) => ids.has(cost.employee_id) && cost.reference_month === month && cost.is_active !== false && cost.status !== "cancelled");
+  const closed = scoped.filter((cost) => cost.status === "closed");
+  const updatedTimes = scoped.map((cost) => cost.updated_at || cost.calculated_at).filter(Boolean).sort();
+  return {
+    closedCount: closed.length,
+    recordedCount: scoped.length,
+    unpreparedCount: Math.max(ids.size - scoped.length, 0),
+    totalClosedCost: roundMoney(closed.reduce((total, cost) => total + toNumber(cost.total_company_cost), 0)),
+    lastUpdatedAt: updatedTimes.at(-1) ?? null,
+    state: ids.size > 0 && closed.length === ids.size ? "closed" as const : closed.length > 0 ? "partial" as const : "estimated" as const,
+  };
 }

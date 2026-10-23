@@ -9,6 +9,7 @@ import { getHrSupabaseClient } from "@/modules/hr/services/service-utils";
 import type { Department, EmployeeStatus, EmploymentType, ID } from "@/modules/hr/types";
 import {
   formatCurrencyBRL,
+  formatReferenceMonthName,
   getDefaultReferenceMonth,
   normalizeReferenceMonth,
   roundMoney,
@@ -333,7 +334,6 @@ interface DashboardContext {
 }
 
 const COST_COLORS = ["#171a1f", "#f97316", "#fb923c", "#71717a", "#a1a1aa", "#0f766e"];
-const monthLabelFormatter = new Intl.DateTimeFormat("pt-BR", { month: "short" });
 
 function isoDateFromParts(year: number, month: number, day: number) {
   return new Date(Date.UTC(year, month - 1, day)).toISOString().slice(0, 10);
@@ -366,9 +366,7 @@ function getMonthSequence(referenceMonth: string, count: number) {
 }
 
 function formatMonthLabel(referenceMonth: string) {
-  const normalized = normalizeReferenceMonth(referenceMonth);
-  const date = new Date(Date.UTC(Number(normalized.slice(0, 4)), Number(normalized.slice(5, 7)) - 1, 1));
-  return monthLabelFormatter.format(date).replace(".", "");
+  return formatReferenceMonthName(referenceMonth);
 }
 
 function isDateInRange(value: string | null | undefined, startDate: string, endDate: string) {

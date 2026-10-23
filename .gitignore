@@ -12,6 +12,9 @@
 
 # testing
 /coverage
+/.homologation/
+/output/
+/tmp/
 
 # next.js
 /.next/

@@ -1,3 +1,5 @@
+import { getDeploymentEnvironment } from "@/lib/environment";
+
 export class SupabaseConfigError extends Error {
   constructor() {
     super(
@@ -8,6 +10,7 @@ export class SupabaseConfigError extends Error {
 }
 
 export function getSupabasePublicConfig() {
+  getDeploymentEnvironment();
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 

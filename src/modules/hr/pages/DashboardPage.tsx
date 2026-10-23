@@ -21,6 +21,7 @@ import {
   RankingTableCard,
 } from "@/modules/hr/components/DashboardCharts";
 import { EmptyState } from "@/modules/hr/components/EmptyState";
+import { CostReferenceSummary } from "@/modules/hr/components/CostReferenceSummary";
 import { ErrorState } from "@/modules/hr/components/ErrorState";
 import { FormField } from "@/modules/hr/components/FormField";
 import { LoadingState } from "@/modules/hr/components/LoadingState";
@@ -36,7 +37,7 @@ import {
   getHrDashboardOccurrences,
   type DashboardScope,
 } from "@/modules/hr/services/hr-dashboard.service";
-import { formatCurrencyBRL, getDefaultReferenceMonth } from "@/modules/hr/utils/labor-cost-calculations";
+import { formatCurrencyBRL, formatReferenceMonth, getDefaultReferenceMonth } from "@/modules/hr/utils/labor-cost-calculations";
 import { formatDate } from "@/modules/hr/utils/format";
 import { formatTurnoverPercentage, type TurnoverStatus } from "@/modules/hr/utils/turnover-calculations";
 
@@ -311,9 +312,9 @@ export function DashboardPage() {
       ? "Carregando custos..."
       : payrollTotal === null
         ? costHiddenReason
-        : core?.scope === "general"
-          ? "Competencia mais recente"
-          : "Competencia selecionada";
+        : costs
+          ? `Competência ${formatReferenceMonth(costs.dashboard.referenceMonth)} - estimativa de custos`
+          : "Competência selecionada";
 
   const averageCostMetricDetail =
     costMetricLoading
@@ -453,6 +454,7 @@ export function DashboardPage() {
 
         {core ? (
           <>
+            {costs ? <div className="mb-5"><CostReferenceSummary dashboard={costs.dashboard} /></div> : null}
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
               <MetricCard
                 label="Colaboradores ativos"

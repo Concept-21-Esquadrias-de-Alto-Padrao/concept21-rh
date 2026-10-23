@@ -14,6 +14,7 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
+import { CostReferenceSummary } from "@/modules/hr/components/CostReferenceSummary";
 import { useMemo } from "react";
 
 import { CompetenceFilter, MultiSelectFilter } from "@/components/filters";
@@ -429,6 +430,7 @@ export function LaborCostDashboardPanel() {
 
       {data ? (
         <>
+          <CostReferenceSummary dashboard={data.dashboard} />
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <MetricCard
               label="Custo total da folha"

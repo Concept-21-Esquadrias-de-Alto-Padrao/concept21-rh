@@ -1,0 +1,11 @@
+{
+  "name": "RH Concept21 - HOMOLOGACAO - SOMENTE TESTES",
+  "environment": "homologation",
+  "supabaseProjectRef": "rcoqywqyjcxdzchojxzs",
+  "supabaseOrganizationId": "vaxcezwtgfrtnrkwcecn",
+  "vercelProjectName": "concept21-rh-homologacao",
+  "vercelTeam": "concept-aluminium",
+  "appUrl": "https://concept21-rh-homologacao.vercel.app",
+  "productionSupabaseRef": "sdyjujqwgsxdrzfuyydm",
+  "productionAppUrl": "https://concept21-rh.vercel.app"
+}

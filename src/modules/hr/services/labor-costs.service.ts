@@ -33,6 +33,7 @@ import {
   roundMoney,
   requiresManualCostInput,
   toNumber,
+  summarizeMonthlyCostSnapshots,
   type CalculatedCostComponent,
 } from "@/modules/hr/utils/labor-cost-calculations";
 
@@ -206,6 +207,9 @@ export interface LaborCostDashboard {
   referenceMonth: string;
   referenceMonthLabel: string;
   employeeCount: number;
+  closing: ReturnType<typeof summarizeMonthlyCostSnapshots>;
+  employeesWithoutCompensation: number;
+  refreshedAt: string;
   totalEstimatedCost: number;
   totalClosedCost: number;
   baseSalaryTotal: number;
@@ -1773,6 +1777,7 @@ export async function getLaborCostDashboard(
   const normalizedReferenceMonth = normalizeReferenceMonth(referenceMonth);
   const summaries = await calculateAllEmployeesMonthlyCost(normalizedReferenceMonth, filters);
   const closedCosts = await listMonthlyEmployeeCosts({ referenceMonth: normalizedReferenceMonth });
+  const closing = summarizeMonthlyCostSnapshots(closedCosts, summaries.map((summary) => summary.employee.id), normalizedReferenceMonth);
   const totalEstimatedCost = roundMoney(
     summaries.reduce((total, summary) => total + summary.totalCompanyCost, 0),
   );
@@ -1792,12 +1797,11 @@ export async function getLaborCostDashboard(
     referenceMonth: normalizedReferenceMonth,
     referenceMonthLabel: formatReferenceMonth(normalizedReferenceMonth),
     employeeCount,
+    closing,
+    employeesWithoutCompensation: summaries.filter((summary) => !summary.compensation).length,
+    refreshedAt: new Date().toISOString(),
     totalEstimatedCost,
-    totalClosedCost: roundMoney(
-      closedCosts
-        .filter((cost) => cost.status === "closed")
-        .reduce((total, cost) => total + toNumber(cost.total_company_cost), 0),
-    ),
+    totalClosedCost: closing.totalClosedCost,
     baseSalaryTotal: roundMoney(summaries.reduce((total, summary) => total + summary.baseSalary, 0)),
     benefitsTotal: roundMoney(summaries.reduce((total, summary) => total + summary.benefitsTotal, 0)),
     allowancesTotal: roundMoney(summaries.reduce((total, summary) => total + summary.allowancesTotal, 0)),

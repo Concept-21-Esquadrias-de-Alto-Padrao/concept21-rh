@@ -1,11 +1,12 @@
 "use client";
 
-import { LogIn, LogOut, ShieldCheck, UserRound } from "lucide-react";
+import { KeyRound, LogIn, LogOut, ShieldCheck, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getDeploymentEnvironment } from "@/lib/environment";
 import {
   getCurrentUserAccess,
   signOut,
@@ -244,6 +245,11 @@ export function CurrentUserMenu() {
           </p>
         </div>
       </div>
+      {getDeploymentEnvironment().isHomologation ? (
+        <Link href="/rh/minha-conta" aria-label="Senha da homologação" title="Definir ou alterar senha da homologação" className="grid h-9 w-9 flex-none place-items-center rounded-md border border-zinc-200 text-zinc-700 hover:border-orange-200 hover:text-orange-700">
+          <KeyRound className="h-4 w-4" />
+        </Link>
+      ) : null}
       <button
         type="button"
         onClick={handleSignOut}

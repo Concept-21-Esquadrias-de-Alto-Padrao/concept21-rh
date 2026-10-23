@@ -1,8 +1,10 @@
 import { createClient, type User } from "@supabase/supabase-js";
+import { getDeploymentEnvironment } from "@/lib/environment";
 
 import { assertSupabasePublicConfig, getPublicAppOrigin } from "@/lib/supabase/config";
 import { getHrSupabaseClient } from "@/modules/hr/services/service-utils";
 import type { Profile, Role, UserRole } from "@/modules/hr/types";
+import { passwordUpdateErrorMessage, validateNewPassword } from "@/modules/hr/utils/password";
 
 export interface CurrentUserAccess {
   authUserId: string;
@@ -74,6 +76,9 @@ export async function signInWithEmail(email: string, password: string) {
 }
 
 export async function signUpWithEmail(input: SignUpInput) {
+  if (getDeploymentEnvironment().isHomologation) {
+    throw new Error("Neste ambiente, utilize uma conta de teste fornecida pelo administrador. O cadastro e o envio de e-mail estão bloqueados.");
+  }
   const supabase = getSignupSupabaseClient();
   const { data, error } = await supabase.auth.signUp({
     email: input.email,
@@ -108,6 +113,26 @@ export async function signOut() {
   if (error) {
     throw new Error(error.message);
   }
+}
+
+export async function updateHomologationPassword(password: string, confirmation: string, expectedAuthUserId: string) {
+  if (!getDeploymentEnvironment().isHomologation) {
+    throw new Error("Esta opção está disponível apenas na homologação.");
+  }
+  const validation = validateNewPassword(password, confirmation);
+  if (validation) throw new Error(validation);
+
+  const supabase = getHrSupabaseClient();
+  const { data: current, error: sessionError } = await supabase.auth.getUser();
+  if (sessionError || !current.user || !isAuthUserEmailConfirmed(current.user)) {
+    throw new Error("Sua sessão expirou. Solicite um novo link pessoal de homologação para definir a senha.");
+  }
+  if (current.user.id !== expectedAuthUserId) {
+    throw new Error("A conta conectada mudou. Recarregue a página e confira o e-mail antes de definir a senha.");
+  }
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) throw new Error(passwordUpdateErrorMessage(error));
 }
 
 export async function getCurrentProfile() {

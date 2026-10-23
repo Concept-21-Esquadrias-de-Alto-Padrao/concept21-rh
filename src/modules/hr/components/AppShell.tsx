@@ -37,7 +37,7 @@ export function AppShell({ children }: PropsWithChildren) {
 
   return (
     <div className="min-h-screen bg-[#f4f5f7] text-[#1b1f24]">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 flex-col bg-[#111316] text-white shadow-2xl lg:flex">
+      <aside className="fixed bottom-0 left-0 top-[var(--environment-banner-height)] z-30 hidden w-72 flex-col bg-[#111316] text-white shadow-2xl lg:flex">
         <div className="border-b border-white/10 px-6 py-6">
           <div className="flex items-center gap-3">
             <div className="grid h-11 w-11 place-items-center rounded-md bg-[#f97316] font-semibold text-white">
@@ -89,7 +89,7 @@ export function AppShell({ children }: PropsWithChildren) {
       </aside>
 
       <div className="lg:pl-72">
-        <header className="sticky top-0 z-20 border-b border-black/5 bg-white/90 px-4 py-3 backdrop-blur lg:px-8">
+        <header className="sticky top-[var(--environment-banner-height)] z-20 border-b border-black/5 bg-white/90 px-4 py-3 backdrop-blur lg:px-8">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 lg:hidden">
               <div className="grid h-10 w-10 place-items-center rounded-md bg-[#111316] text-sm font-semibold text-white">

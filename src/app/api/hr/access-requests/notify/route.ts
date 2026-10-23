@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { getDeploymentEnvironment } from "@/lib/environment";
+import { canSendExternalCommunications } from "@/lib/deployment-environment.mjs";
 
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -27,6 +29,9 @@ async function readProviderResponse(response: Response): Promise<Record<string, 
 }
 
 export async function POST(request: Request) {
+  if (!canSendExternalCommunications(getDeploymentEnvironment().environment)) {
+    return NextResponse.json({ providerConfigured: false, suppressed: true, sent: 0 });
+  }
   const body = (await request.json().catch(() => ({}))) as NotifyRequestBody;
 
   if (!body.requestId) {

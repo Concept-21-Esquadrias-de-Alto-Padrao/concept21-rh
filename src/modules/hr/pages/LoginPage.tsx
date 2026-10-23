@@ -4,12 +4,14 @@ import { LogIn } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { getDeploymentEnvironment } from "@/lib/environment";
 
 import { fieldClassName, FormField } from "@/modules/hr/components/FormField";
 import { signInWithEmail } from "@/modules/hr/services/auth.service";
 import { toUserFriendlyErrorMessage } from "@/modules/hr/utils/errors";
 
 export function LoginPage() {
+  const isHomologation = getDeploymentEnvironment().isHomologation;
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,11 +24,16 @@ export function LoginPage() {
 
     const searchParams = new URLSearchParams(window.location.search);
 
+    if (isHomologation && searchParams.get("password_updated") === "1") {
+      return "Senha da homologação definida. Entre com seu e-mail e a nova senha.";
+    }
+
     if (searchParams.get("confirmed") === "1") {
       return "E-mail confirmado. Entre para acessar a plataforma.";
     }
 
     if (searchParams.get("auth_error") === "callback") {
+      if (isHomologation) return "Não foi possível usar este link de acesso. Ele pode ter expirado ou já ter sido utilizado. Solicite um novo link pessoal de homologação.";
       return "Não foi possível confirmar o e-mail. O link pode estar expirado ou já ter sido usado. Solicite um novo e-mail de verificação ou peça ajuda ao Master/Admin.";
     }
 
@@ -42,7 +49,10 @@ export function LoginPage() {
       await signInWithEmail(email, password);
       router.push("/rh");
     } catch (loginError) {
-      setError(toUserFriendlyErrorMessage(loginError, "Não foi possível entrar."));
+      const message = toUserFriendlyErrorMessage(loginError, "Não foi possível entrar.");
+      setError(isHomologation && message.startsWith("E-mail ou senha inválidos")
+        ? "E-mail ou senha inválidos. Use a senha definida na homologação. Se ainda não definiu ou esqueceu a senha, solicite um novo link pessoal ao responsável."
+        : message);
     } finally {
       setLoading(false);
     }
@@ -106,10 +116,11 @@ export function LoginPage() {
         </form>
 
         <div className="mt-5 border-t border-zinc-200 pt-4 text-center text-sm text-zinc-600">
-          Ainda não tem cadastro?{" "}
+          {isHomologation ? "Primeiro acesso ou esqueceu a senha? Solicite um link pessoal ao responsável pela homologação." : <>Ainda não tem cadastro?{" "}
           <Link href="/cadastro" className="font-semibold text-[#f97316] hover:text-[#ea580c]">
             Criar acesso
           </Link>
+          </>}
         </div>
       </section>
     </main>

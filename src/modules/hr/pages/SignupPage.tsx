@@ -3,6 +3,7 @@
 import { ArrowLeft, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { getDeploymentEnvironment } from "@/lib/environment";
 
 import { fieldClassName, FormField } from "@/modules/hr/components/FormField";
 import { signUpWithEmail } from "@/modules/hr/services/auth.service";
@@ -80,7 +81,11 @@ export function SignupPage() {
           </p>
         </div>
 
-        <form onSubmit={submit} className="space-y-4">
+        {getDeploymentEnvironment().isHomologation ? (
+          <p className="rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
+            Utilize as contas de teste fornecidas pelo administrador. Novos cadastros e envio de e-mails estão bloqueados na homologação.
+          </p>
+        ) : <form onSubmit={submit} className="space-y-4">
           {error ? (
             <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
               {error}
@@ -149,7 +154,7 @@ export function SignupPage() {
             <UserPlus className="h-4 w-4" />
             {loading ? "Criando cadastro..." : "Criar cadastro"}
           </button>
-        </form>
+        </form>}
       </section>
     </main>
   );
