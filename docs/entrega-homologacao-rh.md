@@ -61,6 +61,10 @@ node scripts/run-homologation-local.mjs dev
 
 O preparo faz apenas consultas autenticadas ao projeto de homologação e grava `.homologation/local-env.json`, ignorado pelo Git e pelo deploy. Lê somente as cinco variáveis públicas necessárias, sem solicitar ou copiar `SUPABASE_SERVICE_ROLE_KEY`, senha do banco, token Supabase ou qualquer valor de produção. Não exibe valores de variáveis no terminal.
 
+O ajuste de 24/10/2026 mostra sete etapas, usa modo não interativo e limita a espera a 30 segundos por consulta e 120 segundos no conjunto. Em caso de falha, informa a etapa e distingue login, permissão, limite de consultas e timeout, sem imprimir a resposta privada da API. O arquivo local só é gravado depois de todas as validações. Não há motivo para deixar uma execução silenciosa aguardando indefinidamente.
+
+Conseguir consultar o projeto Vercel não comprova permissão de leitura das suas variáveis. Se aparecer recusa nessa etapa, a solução é o responsável fornecer a configuração local pelo canal seguro ou revisar somente o acesso necessário à homologação; não ampliar o acesso à produção. Não usar `--debug`, `--verbose` ou comandos que imprimam variáveis para diagnosticar esta falha.
+
 Se o desenvolvedor não tiver acesso Vercel, o responsável pode disponibilizar esse arquivo pelo cofre corporativo com compartilhamento nominal e restrito. O modelo, sem chave, está em `config/homologation-local.example.json`. Não enviar o arquivo nesta conversa, em comentário de issue, commit ou canal público. O arquivo desta máquina, por si só, não fica acessível no computador do Eduardo. Esta entrega não confirma um convite Vercel ou compartilhamento de cofre já aceito.
 
 As cinco variáveis locais são `NEXT_PUBLIC_APP_ENV=homologation`, `NEXT_PUBLIC_HOMOLOGATION_SUPABASE_REF=rcoqywqyjcxdzchojxzs`, URL Supabase correspondente, a chave **publishable** desse projeto e `NEXT_PUBLIC_APP_URL=http://localhost:3000`. Nunca colocar uma chave administrativa sob prefixo `NEXT_PUBLIC_`.
@@ -158,3 +162,18 @@ Em 23/10/2026, um clone novo passou na comparação das 143 fontes e 32 arquivos
 `npm ci` informou **11 vulnerabilidades nas dependências: duas moderadas, sete altas e duas críticas**. O lockfile foi preservado para reproduzir o deployment; não foi executado `npm audit fix` ou atualização automática. É necessária uma triagem específica dos avisos e da exposição antes de considerar esta base uma liberação de segurança. Não promover estas alterações para produção como solução de segurança.
 
 Referências operacionais: [fontes de um deployment na API Vercel](https://vercel.com/docs/rest-api/deployments/list-deployment-files), [promoção de deployment](https://vercel.com/docs/deployments/promoting-a-deployment), [reversão](https://vercel.com/docs/instant-rollback) e [variáveis no Next.js](https://nextjs.org/docs/app/guides/environment-variables).
+
+## 7. Entrega dos PDFs enquanto o GitHub recusa push
+
+Em 24/10/2026, a consulta de permissão confirmou que `erodrigues21` tem apenas leitura em `concept21-rh`. O commit local informado, `529f9c8`, e a branch `codex/rh-homologacao-pdf` ainda não estão disponíveis no remoto nem nesta cópia. Os 22 testes e o build dos PDFs foram informados pela equipe do Eduardo, não repetidos pelo responsável nesta etapa.
+
+A alternativa adotada é receber o patch e aplicá-lo pela conta responsável, sem compartilhar tokens ou ampliar permissões da organização. Na cópia do Eduardo:
+
+```powershell
+git status --short
+git format-patch -1 529f9c8 --output-directory .\entrega-rh
+```
+
+Anexar o arquivo `.patch` gerado, sem `.env`, senhas, tokens, arquivos de navegador ou dados reais de colaboradores. Gerar o patch não altera a branch, o deployment ou o banco. O responsável deve conferir conteúdo, base e autoria antes de aplicar o patch na branch separada de PDFs e repetir a validação. Não aplicar cegamente alterações de migrations, autenticação ou configuração junto de uma correção de layout.
+
+A branch do Eduardo agora contém um commit próprio após `7ef0847`; por isso, o antigo comando `merge --ff-only` pode não aceitar o novo ajuste de ferramentas. Para trazer somente esse ajuste sem perder o PDF, fazer `git fetch origin` e cherry-pick do SHA do ajuste informado pelo responsável, com a árvore limpa. Se houver conflito, parar para revisar; não executar reset forçado nem trocar arquivos pelos da outra branch em massa. Nenhuma publicação é autorizada apenas por receber o patch: primeiro revisar, testar o build preparado e só então promover na homologação.
