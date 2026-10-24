@@ -11,8 +11,44 @@ export function normalizeSource(file, raw) {
     : raw;
 }
 
-export function vercelApi(endpoint) {
-  return JSON.parse(runCli("vercel@50.28.0", ["api", `${endpoint}${endpoint.includes("?") ? "&" : "?"}teamId=${teamId}`, "--raw", "--scope", config.vercelTeam]));
+export class VercelPreparationError extends Error {
+  constructor(code, step) {
+    super("Não foi possível conferir a configuração da homologação.");
+    this.code = code;
+    this.step = step;
+  }
+}
+
+export function classifyVercelFailure(error) {
+  const message = String(error?.message ?? "");
+  if (/\b403\b|forbidden|insufficient permission|not authorized to access/i.test(message)) return "PERMISSION_DENIED";
+  if (/\b401\b|unauthenticated|not logged in|no existing credentials|please (?:run|log in)/i.test(message)) return "LOGIN_REQUIRED";
+  if (/ETIMEDOUT|timed? out|timeout/i.test(message)) return "TIMEOUT";
+  if (/\b429\b|rate.?limit/i.test(message)) return "RATE_LIMIT";
+  return "UNAVAILABLE";
+}
+
+export function preparationFailureMessage(error) {
+  const messages = {
+    PERMISSION_DENIED: "A conta Vercel não tem permissão para esta consulta. Ler o projeto não garante acesso às variáveis. Peça ao responsável a configuração local por canal seguro; não solicite acesso à produção.",
+    LOGIN_REQUIRED: "A CLI precisa de login. Execute npx --yes vercel@50.28.0 login com sua conta nominal e tente novamente.",
+    TIMEOUT: "O limite de espera foi atingido. Confira a conexão e se npx --yes vercel@50.28.0 --version conclui; depois repita o preparo.",
+    RATE_LIMIT: "O Vercel limitou temporariamente as consultas. Aguarde alguns minutos e tente novamente.",
+    INVALID_RESPONSE: "A configuração remota não está completa no formato esperado. Peça ao responsável para conferir a homologação.",
+  };
+  const code = error instanceof VercelPreparationError ? error.code : "UNAVAILABLE";
+  const step = error instanceof VercelPreparationError && Number.isInteger(error.step) && error.step >= 1 && error.step <= 7 ? ` na etapa ${error.step}/7` : "";
+  return `Preparo interrompido${step}. ${messages[code] ?? "Confira a instalação da CLI e o acesso à homologação com o responsável."} Nenhum valor de variável foi exibido.`;
+}
+
+export function vercelApi(endpoint, { timeout = 30_000 } = {}) {
+  try {
+    const payload = JSON.parse(runCli("vercel@50.28.0", ["api", `${endpoint}${endpoint.includes("?") ? "&" : "?"}teamId=${teamId}`, "--raw", "--non-interactive", "--scope", config.vercelTeam], { timeout, windowsHide: true }));
+    if (payload.error || payload._tag === "Error") throw new Error(JSON.stringify(payload.error ?? payload));
+    return payload;
+  } catch (error) {
+    throw new VercelPreparationError(classifyVercelFailure(error));
+  }
 }
 
 export function assertVercelProject(project) {
@@ -40,16 +76,30 @@ export function assertNoEnvFiles(directory = root) {
   if (readdirSync(directory).some((name) => name.startsWith(".env"))) throw new Error("Há arquivos .env nesta cópia. Use um clone exclusivo de testes, sem .env da produção.");
 }
 
-export function verifyPublishedEnvironment() {
-  const project = vercelApi(`/v9/projects/${projectId}`);
+export function verifyPublishedEnvironment({ api = vercelApi, onProgress = () => {}, now = Date.now, totalTimeoutMs = 120_000 } = {}) {
+  const deadline = now() + totalTimeoutMs;
+  let step = 0;
+  function request(endpoint, label) {
+    step += 1;
+    onProgress(`Etapa ${step}/7: ${label}.`);
+    const remaining = deadline - now();
+    if (remaining <= 0) throw new VercelPreparationError("TIMEOUT", step);
+    try {
+      return api(endpoint, { timeout: Math.min(30_000, remaining) });
+    } catch (error) {
+      throw new VercelPreparationError(error instanceof VercelPreparationError ? error.code : classifyVercelFailure(error), step);
+    }
+  }
+  const project = request(`/v9/projects/${projectId}`, "confirmando o projeto de homologação");
   assertVercelProject(project);
-  const listing = vercelApi(`/v10/projects/${projectId}/env`);
+  const listing = request(`/v10/projects/${projectId}/env`, "conferindo os nomes das variáveis");
+  if (!Array.isArray(listing.envs)) throw new VercelPreparationError("INVALID_RESPONSE", step);
   if (listing.envs.some((item) => ["RESEND_API_KEY", "ACCESS_REQUEST_FROM_EMAIL"].includes(item.key))) throw new Error("Remova a configuração de envio externo da homologação antes de publicar.");
   const env = {};
   for (const key of localKeys) {
     const candidates = listing.envs.filter((item) => item.key === key && item.target?.includes("production") && !item.gitBranch);
     if (candidates.length !== 1) throw new Error(`Configuração remota ausente ou ambígua: ${key}.`);
-    const item = vercelApi(`/v1/projects/${projectId}/env/${candidates[0].id}`);
+    const item = request(`/v1/projects/${projectId}/env/${candidates[0].id}`, `consultando ${key}, sem exibir seu valor`);
     if (item.key !== key || typeof item.value !== "string") throw new Error(`Não foi possível ler a configuração pública ${key}.`);
     env[key] = item.value;
   }
