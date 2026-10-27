@@ -47,3 +47,39 @@ test("monthly PDF handles empty data and many distinct rows", async () => {
   assert.ok(pages.join("\n").includes("fixtureline registro 99"));
   assert.ok(pages.every((page) => page.includes("IDENTITY-QA")));
 });
+
+test("each of one hundred distinct employees stays identified on the page of its occurrence", async () => {
+  const report = fixture({ count: 100 });
+  report.summary.employeeCount = 100;
+  report.departmentSummaries[0].employeeCount = 100;
+  report.rows.forEach((row, index) => {
+    const code = String(index).padStart(3, "0");
+    row.employeeName = `COLAB-QA-${code}`;
+    row.employeeNumber = `H${code}`;
+    row.justification = `RECORD-QA-${code}`;
+  });
+  const before = structuredClone(report);
+  const doc = await createMonthlyOccurrenceReportPdf(report);
+  const pages = doc.internal.pages.slice(1).map((page) => page.join("\n"));
+  report.rows.forEach((row) => {
+    const containing = pages.filter((page) => page.includes(row.justification));
+    assert.equal(containing.length, 1, "Each occurrence must appear exactly once");
+    assert.ok(containing[0].includes(row.employeeName));
+    assert.ok(containing[0].includes(row.employeeNumber));
+  });
+  assert.deepEqual(report, before);
+});
+
+test("filter summaries can span several pages without losing the last selected employee", async () => {
+  const report = fixture({ count: 0 });
+  report.departmentSummaries = [];
+  report.filters.employeeName = Array.from({ length: 650 }, (_, index) => `FILTER-QA-${String(index).padStart(3, "0")} Nome ficticio selecionado`).join(", ");
+  const doc = await createMonthlyOccurrenceReportPdf(report);
+  const pages = doc.internal.pages.slice(1).map((page) => page.join("\n"));
+  assert.ok(pages.length > 2);
+  assert.ok(pages.every((page) => page.includes("Concept21 Aluminium")));
+  for (let index = 0; index < 650; index += 1) {
+    assert.ok(pages.join("\n").includes(`FILTER-QA-${String(index).padStart(3, "0")}`));
+  }
+  assert.ok(pages.at(-1).includes("Sem registros"));
+});
