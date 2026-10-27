@@ -38,3 +38,41 @@ Usar exclusivamente o procedimento de docs/entrega-homologacao-rh.md. Estes test
 ## Conciliação na cópia do Eduardo em 27/10/2026
 
 Preservados os commits locais 529f9c8, 3667c0a e e8e7ce3 e incorporada a revisão remota até 7086730. Os testes adicionais de ambas as cópias foram mantidos. A indicação acima de que 3667c0a não havia sido recebido descreve a revisão do responsável naquele momento; a cópia local conciliada contém essa correção. Nenhum deploy ou SQL faz parte desta conciliação.
+
+## Publicação conjunta na homologação em 27/10/2026
+
+O bundle `entrega-rh.bundle` foi recebido, conferido com o SHA-256 `811e3a084af51ca4b10765cb667f742bfebabc5c722a8c44cb48590e72c21042` e validado por `git bundle verify`. A branch do responsável avançou por fast-forward até `c88f153c8a5b27f4d5c68c0013234718b7df5f77`, preservando os commits originais `529f9c8`, `3667c0a`, `e8e7ce3` e a revisão `7086730`. A branch `codex/rh-homologacao-pdf` foi enviada ao GitHub sem rebase ou push forçado. `main` não foi alterada.
+
+Publicação confirmada:
+
+| Item | Valor |
+| --- | --- |
+| Domínio | https://concept21-rh-homologacao.vercel.app |
+| Commit da aplicação publicada | `c88f153c8a5b27f4d5c68c0013234718b7df5f77` |
+| Projeto Vercel | `concept21-rh-homologacao` |
+| Project ID | `prj_7WWMGTE7cuoJjCoF4Z2rp9YvKynv` |
+| Deployment aprovado | `dpl_GQxrVXukWsg8zLykm15gH82zTugQ` |
+| Supabase exclusivo dos testes | `rcoqywqyjcxdzchojxzs` |
+| Deployment anterior para reversão | `dpl_9sYRQvxSCVgNVWxABFPnuqMPTV2f` |
+
+O build foi preparado em checkout limpo e isolado, sem trocar o domínio. Após os testes autenticados na URL temporária, foi promovido com o script protegido. A API confirmou que o domínio fixo aponta para o deployment aprovado; os testes foram repetidos nesse domínio. A proteção Vercel da URL temporária permaneceu habilitada e foi acessada pela identidade já autorizada da CLI, sem compartilhar credenciais ou bypass.
+
+### Resultado da validação
+
+- Passaram os 32 testes automatizados, TypeScript, ESLint e a compilação local; o build Vercel ficou READY.
+- O perfil RH gerou a prévia e baixou o PDF mensal de outubro com seis colaboradores fictícios selecionados e todas as categorias. O resultado continha cinco ocorrências de dois colaboradores, conciliadas com a prévia.
+- Tanto na URL temporária como no domínio fixo, um resumo fictício extenso produziu seis páginas. A extração encontrou os 120 marcadores exatamente uma vez, com colaborador e matrícula nas continuações. Filtros completos, margens, cabeçalhos, rodapés e todas as páginas renderizadas foram conferidos, sem páginas vazias ou texto oculto sob o cabeçalho.
+- A auditoria confirmou `monthly_occurrence_report.pdf_generated`, competência `2026-10`, contagens e o filtro dos seis colaboradores. Eventos desta validação: `ce0f5607-ae5b-4c3d-a323-8246a26921c9` e `5cebdd3d-55ac-4548-9da0-cde061fd9ab5`.
+- A recusa de documentos passou nos cenários descritos em `docs/recusa-documentos-validacao.md`, incluindo auditoria e negação pela RLS ao perfil restrito.
+- Nos fluxos exercitados, não houve exceção JavaScript nem chamada ao Supabase de produção. A notificação de solicitação de acesso retornou envio suprimido.
+- Somente documentos e ocorrências fictícios identificados por UUID e marcador próprios foram criados e removidos. A consulta final encontrou zero registros com o marcador desta validação; os eventos de auditoria foram preservados. Nenhum usuário, perfil de acesso ou arquivo do Storage foi alterado.
+
+Os 32 checksums do histórico `app.homologation_bootstrap_files` foram comparados com o manifesto e os arquivos locais, sem divergências. Não houve migration, seed ou alteração de política. O projeto de produção permaneceu no deployment `dpl_5MV5ZvoZGMGYbvQpHGA7oU9ZCdtn`; a conferência final foi somente de leitura. O vínculo Vercel de produção na raiz não foi modificado.
+
+### Pendências e acesso direto
+
+A troca para a aba mensal por clique não concluiu nos testes com Chrome. O mesmo comportamento foi reproduzido no deployment anterior, antes da promoção; não foi introduzido pelo bundle. Nesta entrega, o PDF foi validado pelo endereço direto com os filtros na URL: https://concept21-rh-homologacao.vercel.app/rh/ocorrencias?tab=monthly-report&monthlyCompetence=2026-10. A correção da navegação permanece pendente; os resultados acima não certificam a troca de abas ou a edição dos filtros pela interface.
+
+Também permanecem fora desta liberação os apontamentos anteriores de administração de perfis pelo RH, férias pendentes no Dashboard e tradução de `restricted`, além da triagem de dependências registrada na entrega inicial. Esta publicação não representa liberação de segurança nem autorização para produção.
+
+Para reverter a aplicação, usar `node scripts/publish-homologation.mjs rollback dpl_9sYRQvxSCVgNVWxABFPnuqMPTV2f` em checkout isolado com destino de homologação validado, conforme `docs/entrega-homologacao-rh.md`, e conferir novamente o domínio. Não executar rollback de banco por causa desta entrega. Commits posteriores apenas de documentação não mudam o SHA da aplicação publicado acima.
