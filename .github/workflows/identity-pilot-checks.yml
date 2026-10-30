@@ -1,0 +1,24 @@
+name: Identity pilot checks
+
+on:
+  pull_request:
+    paths:
+      - "src/app/api/identity/**"
+      - "src/app/identidade-piloto/**"
+      - "src/lib/corporate-identity.ts"
+      - "supabase/migrations/*central_identity_registry.sql"
+      - ".github/workflows/identity-pilot-checks.yml"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run lint
+      - run: npx tsc --noEmit
+      - run: npm run build
