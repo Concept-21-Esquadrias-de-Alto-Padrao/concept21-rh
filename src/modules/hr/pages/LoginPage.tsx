@@ -33,6 +33,22 @@ export function LoginPage() {
     return null;
   });
 
+  // Only the local OAuth consent route may be resumed after signing in.
+  const returnToConsent = () => {
+    const value = new URLSearchParams(window.location.search).get("next");
+    if (!value) return null;
+    try {
+      const url = new URL(value, window.location.origin);
+      return url.origin === window.location.origin &&
+        url.pathname === "/oauth/consent" &&
+        Boolean(url.searchParams.get("authorization_id"))
+        ? `${url.pathname}${url.search}`
+        : null;
+    } catch {
+      return null;
+    }
+  };
+
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
@@ -40,7 +56,7 @@ export function LoginPage() {
 
     try {
       await signInWithEmail(email, password);
-      router.push("/rh");
+      router.push(returnToConsent() ?? "/rh");
     } catch (loginError) {
       setError(toUserFriendlyErrorMessage(loginError, "Não foi possível entrar."));
     } finally {
