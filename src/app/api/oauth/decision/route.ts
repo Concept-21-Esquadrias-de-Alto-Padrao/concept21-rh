@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
-import { isAllowedOAuthRedirect } from "@/lib/oauth-pilot";
+import { allowedOAuthClients, isAllowedOAuthClient, isAllowedOAuthRedirect } from "@/lib/oauth-pilot";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
   if (process.env.CENTRAL_OAUTH_PILOT_ENABLED !== "true" ||
-      !process.env.CENTRAL_OAUTH_ALLOWED_CLIENT_ID) {
+      allowedOAuthClients().length === 0) {
     return NextResponse.json({ error: "Piloto indisponível." }, { status: 404 });
   }
   if (request.headers.get("origin") !== new URL(request.url).origin) {
@@ -28,8 +28,7 @@ export async function POST(request: Request) {
   }
   const { data: details, error: detailsError } = await supabase.auth.oauth.getAuthorizationDetails(authorizationId);
   if (detailsError || !details || !("authorization_id" in details) ||
-      details.client.id !== process.env.CENTRAL_OAUTH_ALLOWED_CLIENT_ID ||
-      !isAllowedOAuthRedirect(details.redirect_uri)) {
+      !isAllowedOAuthClient(details.client.id, details.redirect_uri)) {
     return NextResponse.json({ error: "Aplicativo não autorizado." }, { status: 403 });
   }
 

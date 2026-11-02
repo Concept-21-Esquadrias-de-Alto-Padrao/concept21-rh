@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
-import { isAllowedOAuthRedirect } from "@/lib/oauth-pilot";
+import { allowedOAuthClients, isAllowedOAuthClient, isAllowedOAuthRedirect } from "@/lib/oauth-pilot";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -12,11 +12,9 @@ export default async function OAuthConsentPage({
   searchParams: Promise<{ authorization_id?: string }>;
 }) {
   const { authorization_id: authorizationId } = await searchParams;
-  const allowedClientId = process.env.CENTRAL_OAUTH_ALLOWED_CLIENT_ID;
-
   if (!process.env.CENTRAL_OAUTH_PILOT_ENABLED ||
       process.env.CENTRAL_OAUTH_PILOT_ENABLED !== "true" ||
-      !allowedClientId || !authorizationId || authorizationId.length > 256) {
+      allowedOAuthClients().length === 0 || !authorizationId || authorizationId.length > 256) {
     return <p className="p-8">Esta autorização não está disponível.</p>;
   }
 
@@ -41,7 +39,7 @@ export default async function OAuthConsentPage({
     return <p className="p-8">A solicitação expirou ou é inválida. Volte ao módulo e tente novamente.</p>;
   }
   if ("authorization_id" in data &&
-      (data.client.id !== allowedClientId || !isAllowedOAuthRedirect(data.redirect_uri))) {
+      !isAllowedOAuthClient(data.client.id, data.redirect_uri)) {
     return <p className="p-8">Este aplicativo não está autorizado no piloto.</p>;
   }
   if (!("authorization_id" in data)) {
