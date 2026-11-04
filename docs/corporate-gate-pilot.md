@@ -10,6 +10,14 @@ e `CORPORATE_GATE_PILOT_LINK_ID=c674e98b-64fe-4b8c-bf02-2d5d56330605`.
 Somente esse par pode ser alterado pela rota interna.
 Não configure o sinalizador na produção.
 
+Para recuperar o vínculo V05 sem intervenção no banco, o endpoint de consulta
+de Master aceita opcionalmente `CORPORATE_GATE_RECOVERY_ADMIN_USER_ID`. Esse ID
+deve ser de uma segunda identidade revisada, com perfil ativo e papel Master
+vigente. O Portal exige simultaneamente o ID da conta Portal, o subject RH,
+um vínculo RH ativo e uma identidade corporativa ativa. Deixar a variável sem
+valor mantém o comportamento atual. A rota de alteração local continua limitada
+ao par V05; a conta de recuperação não ganha poder para modificar outros vínculos.
+
 O Portal verifica o token emitido pelo projeto Supabase do RH e consulta o
 vínculo da identidade corporativa. A interface consulta o vínculo a cada cinco
 segundos e encerra sua sessão quando o Portal responde que foi revogado. Falha
@@ -33,6 +41,8 @@ O guarda da função privilegiada `request_access_review` foi aplicado como
 versão `20261104130751`. Em transação revertida, uma identidade revogada
 recebeu erro 42501 ao chamar a função. Nenhuma linha piloto permaneceu gravada.
 
-**Pendente:** configurar os aplicativos e testar com sessão
-existente, URL direta, consentimento OAuth, Storage e consulta direta ao Supabase.
-Até concluir esses testes, não afirmar revogação completa.
+Em 04/11/2026, o bloqueio foi ativado somente em homologação. A sessão aberta
+foi encerrada e as leituras SQL com papel autenticado retornaram zero após
+revogação e os dados anteriores após restauração. Ainda falta um teste real de
+Storage com objeto privado e token previamente emitido, e o segundo Master
+precisa ser revisado, configurado e testado em sessão independente.
