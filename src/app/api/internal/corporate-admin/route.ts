@@ -1,5 +1,6 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
+import { isReviewedPilotAdmin } from "@/lib/corporate-pilot-admin";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -17,7 +18,8 @@ export async function POST(request: Request) {
   const authUserId = body && typeof body === "object" && "authUserId" in body ? body.authUserId : null;
   if (typeof authUserId !== "string" || !uuid.test(authUserId))
     return NextResponse.json({ master: false }, { status: 400 });
-  if (!process.env.CORPORATE_GATE_PILOT_USER_ID || authUserId !== process.env.CORPORATE_GATE_PILOT_USER_ID)
+  if (!isReviewedPilotAdmin(authUserId, process.env.CORPORATE_GATE_PILOT_USER_ID,
+    process.env.CORPORATE_GATE_RECOVERY_ADMIN_USER_ID))
     return NextResponse.json({ master: false }, { status: 403 });
 
   const admin = getSupabaseAdminClient();
