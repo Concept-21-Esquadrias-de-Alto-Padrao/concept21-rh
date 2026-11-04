@@ -21,6 +21,7 @@ type AuthGateState =
   | { status: "pending-access"; access: CurrentUserAccess; requestId: string | null }
   | { status: "unverified-email"; email?: string | null }
   | { status: "inactive-profile"; email?: string | null }
+  | { status: "revoked" }
   | { status: "missing-profile"; email?: string | null; authUserId?: string | null }
   | { status: "error"; message: string };
 
@@ -30,8 +31,11 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let active = true;
+    let loading = false;
 
-    async function loadAuthState() {
+    async function loadAuthState(silent = false) {
+      if (loading) return;
+      loading = true;
       try {
         const supabase = getSupabaseBrowserClient();
         const session = await supabase.auth.getSession();
@@ -39,6 +43,20 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
         if (!session.data.session) {
           router.replace("/login");
           return;
+        }
+
+        if (process.env.NEXT_PUBLIC_CORPORATE_GATE_ENABLED === "true") {
+          const gate = await fetch("/api/auth/corporate-access", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${session.data.session.access_token}` },
+            cache: "no-store",
+          });
+          if (gate.status === 403 || gate.status === 401) {
+            await signOut();
+            if (active) setState({ status: "revoked" });
+            return;
+          }
+          if (!gate.ok) throw new Error("Não foi possível validar o vínculo corporativo.");
         }
 
         if (!isAuthUserEmailConfirmed(session.data.session.user)) {
@@ -87,17 +105,19 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
         if (access.roles.length === 0) {
           let requestId: string | null = null;
 
-          try {
-            requestId = await requestCurrentUserAccessReview();
-          } catch (requestError) {
-            console.warn("Access review request failed", requestError);
+          if (!silent) {
+            try {
+              requestId = await requestCurrentUserAccessReview();
+            } catch (requestError) {
+              console.warn("Access review request failed", requestError);
+            }
           }
 
           if (!active) {
             return;
           }
 
-          setState({ status: "pending-access", access, requestId });
+          if (!silent) setState({ status: "pending-access", access, requestId });
           return;
         }
 
@@ -111,13 +131,17 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
           status: "error",
           message: toUserFriendlyErrorMessage(error, "Não foi possível validar a sessão."),
         });
+      } finally {
+        loading = false;
       }
     }
 
-    loadAuthState();
+    void loadAuthState();
+    const interval = window.setInterval(() => { void loadAuthState(true); }, 5000);
 
     return () => {
       active = false;
+      window.clearInterval(interval);
     };
   }, [router]);
 
@@ -148,6 +172,14 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
         {state.message}
       </div>
     );
+  }
+
+  if (state.status === "revoked") {
+    return <div className="rounded-md border border-red-200 bg-red-50 p-5 text-sm text-red-800">
+      <p className="font-semibold">Acesso corporativo encerrado.</p>
+      <p>O vínculo deste módulo foi revogado. Solicite revisão do acesso internamente.</p>
+      <Link href="/login">Voltar ao login</Link>
+    </div>;
   }
 
   if (state.status === "unverified-email") {

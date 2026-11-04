@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
 import { allowedOAuthClients, isAllowedOAuthClient, isAllowedOAuthRedirect } from "@/lib/oauth-pilot";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { checkCorporateAccess } from "@/lib/corporate-access-server";
 
 export async function POST(request: Request) {
   if (process.env.CENTRAL_OAUTH_PILOT_ENABLED !== "true" ||
@@ -25,6 +26,12 @@ export async function POST(request: Request) {
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) {
     return NextResponse.json({ error: "Entre no RH novamente." }, { status: 401 });
+  }
+  if (decision === "approve" && process.env.CORPORATE_GATE_ENABLED === "true") {
+    const { data: { session } } = await supabase.auth.getSession();
+    const access = await checkCorporateAccess(session?.access_token ?? "");
+    if (access !== "allowed") return NextResponse.json({ error: "Vínculo corporativo indisponível." },
+      { status: access === "revoked" ? 403 : 503 });
   }
   const { data: details, error: detailsError } = await supabase.auth.oauth.getAuthorizationDetails(authorizationId);
   if (detailsError || !details || !("authorization_id" in details) ||
