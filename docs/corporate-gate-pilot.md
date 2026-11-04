@@ -5,6 +5,9 @@ No deploy de homologação, configure `CORPORATE_GATE_ENABLED=true`,
 `PORTAL_CORPORATE_ACCESS_URL=https://concept21-portal-homologacao.vercel.app/api/internal/module-access`.
 Configure `PORTAL_GATE_SYNC_SECRET` com valor aleatório exclusivo de pelo menos
 32 caracteres, igual a `RH_MODULE_GATE_SYNC_SECRET` no servidor do Portal.
+Configure `CORPORATE_GATE_PILOT_USER_ID=1648c90c-0b7a-46fc-acf4-32c73cd21c04`
+e `CORPORATE_GATE_PILOT_LINK_ID=c674e98b-64fe-4b8c-bf02-2d5d56330605`.
+Somente esse par pode ser alterado pela rota interna.
 Não configure o sinalizador na produção.
 
 O Portal verifica o token emitido pelo projeto Supabase do RH e consulta o
@@ -26,6 +29,9 @@ homologação. A identidade piloto revogada leu zero linhas de `profiles`, e
 com a condição ativa recuperou a leitura. O ensaio foi revertido. Depois, a
 migração foi aplicada na homologação como versão `20261104125217`: 52 políticas
 foram criadas e o cadastro de bloqueio permaneceu vazio.
+O guarda da função privilegiada `request_access_review` foi aplicado como
+versão `20261104130751`. Em transação revertida, uma identidade revogada
+recebeu erro 42501 ao chamar a função. Nenhuma linha piloto permaneceu gravada.
 
 **Pendente:** configurar os aplicativos e testar com sessão
 existente, URL direta, consentimento OAuth, Storage e consulta direta ao Supabase.

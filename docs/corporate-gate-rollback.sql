@@ -1,5 +1,17 @@
 -- Use only for reverting the homologation pilot after verifying gate status.
 begin;
+-- Restore the pre-pilot public wrapper before removing its private dependency.
+create or replace function public.request_access_review()
+returns uuid language plpgsql security definer
+set search_path = public, app
+as $$
+begin
+  if ((select auth.jwt()) ->> 'client_id') is not null then
+    raise exception 'OAuth client cannot request RH access' using errcode = '42501';
+  end if;
+  return app.request_access_review();
+end;
+$$;
 do $$
 declare target record;
 begin
