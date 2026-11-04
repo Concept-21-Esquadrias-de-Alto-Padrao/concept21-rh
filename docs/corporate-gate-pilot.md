@@ -8,11 +8,11 @@ Não configure o sinalizador na produção.
 O Portal verifica o token emitido pelo projeto Supabase do RH e consulta o
 vínculo da identidade corporativa. A interface consulta o vínculo a cada cinco
 segundos e encerra sua sessão quando o Portal responde que foi revogado. Falha
-de comunicação bloqueia a tela.
+de comunicação bloqueia a tela. As rotas de solicitação de acesso e a decisão
+de consentimento OAuth também consultam o vínculo antes de operações privilegiadas.
 
-**Limite atual:** o RH usa consultas diretas do navegador ao Supabase e possui
-rotas de API que ainda não consultam esse vínculo. Um JWT ainda válido pode
-acessar essas operações até que regras restritivas de RLS e as rotas de API
+**Limite atual:** o RH usa consultas diretas do navegador ao Supabase. Um JWT
+ainda válido pode acessar essas operações até que regras restritivas de RLS
 reflitam a revogação. Este piloto não cumpre o requisito de revogação completa
 antes dessa etapa e do teste com sessão existente, URL direta e consulta direta
 ao Supabase.
