@@ -212,7 +212,9 @@ export async function uploadEmployeeDocument(input: {
   return updated as EmployeeDocument;
 }
 
-export async function generateDocumentSignedUrl(document: EmployeeDocument, expiresIn = 300) {
+// A signed URL remains usable after a corporate link is revoked. Download with
+// the current session so Storage evaluates the RLS gate on each new request.
+export async function downloadEmployeeDocument(document: EmployeeDocument): Promise<Blob> {
   if (!document.storage_path) {
     throw new Error("Documento sem arquivo vinculado.");
   }
@@ -220,13 +222,13 @@ export async function generateDocumentSignedUrl(document: EmployeeDocument, expi
   const supabase = getHrSupabaseClient();
   const { data, error } = await supabase.storage
     .from(document.storage_bucket || "hr-documents")
-    .createSignedUrl(document.storage_path, expiresIn);
+    .download(document.storage_path);
 
-  if (error) {
-    throw new Error(error.message);
+  if (error || !data) {
+    throw new Error(error?.message || "Não foi possível baixar este documento.");
   }
 
-  return data.signedUrl;
+  return data;
 }
 
 export async function replaceEmployeeDocument(documentId: ID, file: File) {
