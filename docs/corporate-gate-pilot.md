@@ -11,8 +11,18 @@ segundos e encerra sua sessão quando o Portal responde que foi revogado. Falha
 de comunicação bloqueia a tela. As rotas de solicitação de acesso e a decisão
 de consentimento OAuth também consultam o vínculo antes de operações privilegiadas.
 
-**Limite atual:** o RH usa consultas diretas do navegador ao Supabase. Um JWT
-ainda válido pode acessar essas operações até que regras restritivas de RLS
-reflitam a revogação. Este piloto não cumpre o requisito de revogação completa
-antes dessa etapa e do teste com sessão existente, URL direta e consulta direta
-ao Supabase.
+A migração `corporate_gate_homologation` acrescenta uma política restritiva às
+tabelas `public` com RLS e a `storage.objects`. O Portal atualiza primeiro a
+condição local para revogar e só depois marca o vínculo como revogado. Uma
+restauração inverte essa ordem. Usuários sem linha no cadastro local conservam
+as permissões atuais durante o piloto. Um rollback de DDL está em
+`docs/corporate-gate-rollback.sql`.
+
+Em 04/11/2026, a migração foi ensaiada em transação revertida no Supabase de
+homologação. A identidade piloto revogada leu zero linhas de `profiles`, e
+com a condição ativa recuperou a leitura. `corporate_gate_subjects` não ficou
+criada ao final do ensaio.
+
+**Pendente:** aplicar a migração, configurar o Portal e testar com sessão
+existente, URL direta, consentimento OAuth, Storage e consulta direta ao Supabase.
+Até concluir esses testes, não afirmar revogação completa.
