@@ -50,7 +50,7 @@ export default function StorageProofPage() {
 
       const { data, error } = await supabase.storage
         .from("hr-documents")
-        .download(TEST_PATH, {}, { cache: "no-store" });
+        .download(TEST_PATH, { cacheNonce: crypto.randomUUID() }, { cache: "no-store" });
       const { data: afterRequest } = await supabase.auth.getSession();
       if (afterRequest.session?.access_token !== originalToken.current) {
         setResult("O JWT mudou durante a consulta; esta rodada não comprova revogação do mesmo token.");
