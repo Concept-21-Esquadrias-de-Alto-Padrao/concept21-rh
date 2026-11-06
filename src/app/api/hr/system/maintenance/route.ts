@@ -28,6 +28,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    if (request.headers.get("origin") !== new URL(request.url).origin) {
+      return NextResponse.json({ error: "Origem inválida." }, { status: 403, headers });
+    }
     const body: unknown = await request.json();
     if (!body || typeof body !== "object" || !("enabled" in body) || typeof body.enabled !== "boolean") {
       return NextResponse.json({ error: "Informe enabled como booleano." }, { status: 400, headers });
