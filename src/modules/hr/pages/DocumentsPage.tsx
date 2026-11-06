@@ -187,7 +187,7 @@ export function DocumentsPage() {
       <PageHeader
         eyebrow="Storage privado"
         title="Documentos"
-        description="Controle de documentos dos colaboradores com validade, status, aprovação e URL assinada."
+        description="Controle de documentos dos colaboradores com validade, status, aprovação e abertura autenticada."
         actions={
           <button
             type="button"
@@ -281,7 +281,13 @@ export function DocumentsPage() {
             </FormField>
           </div>
 
-          <FileUploadField label="Arquivo (opcional)" file={file} onChange={setFile} />
+          <FileUploadField
+            label="Arquivo (opcional)"
+            file={file}
+            accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx"
+            hint="PDF, imagem, DOCX ou XLSX até 15 MB"
+            onChange={setFile}
+          />
 
           <FormField label="Observacoes">
             <textarea
