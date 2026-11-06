@@ -212,8 +212,8 @@ export async function uploadEmployeeDocument(input: {
   return updated as EmployeeDocument;
 }
 
-// A signed URL remains usable after a corporate link is revoked. Download with
-// the current session so Storage evaluates the RLS gate on each new request.
+// Signed URLs and cached authenticated downloads can outlive a revoked link.
+// Use the current JWT with a unique cache key so a prior 200 is not reused.
 export async function downloadEmployeeDocument(document: EmployeeDocument): Promise<Blob> {
   if (!document.storage_path) {
     throw new Error("Documento sem arquivo vinculado.");
@@ -222,7 +222,7 @@ export async function downloadEmployeeDocument(document: EmployeeDocument): Prom
   const supabase = getHrSupabaseClient();
   const { data, error } = await supabase.storage
     .from(document.storage_bucket || "hr-documents")
-    .download(document.storage_path);
+    .download(document.storage_path, { cacheNonce: crypto.randomUUID() }, { cache: "no-store" });
 
   if (error || !data) {
     throw new Error(error?.message || "Não foi possível baixar este documento.");
