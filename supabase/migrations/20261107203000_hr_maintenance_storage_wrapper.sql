@@ -10,12 +10,12 @@ grant execute on function public.hr_maintenance_can_write() to authenticated;
 
 drop policy if exists hr_maintenance_storage_insert on storage.objects;
 create policy hr_maintenance_storage_insert on storage.objects as restrictive
-for insert to authenticated with check (public.hr_maintenance_can_write());
+for insert to authenticated with check (bucket_id <> 'hr-documents' or public.hr_maintenance_can_write());
 drop policy if exists hr_maintenance_storage_update on storage.objects;
 create policy hr_maintenance_storage_update on storage.objects as restrictive
 for update to authenticated
-using (public.hr_maintenance_can_write())
-with check (public.hr_maintenance_can_write());
+using (bucket_id <> 'hr-documents' or public.hr_maintenance_can_write())
+with check (bucket_id <> 'hr-documents' or public.hr_maintenance_can_write());
 drop policy if exists hr_maintenance_storage_delete on storage.objects;
 create policy hr_maintenance_storage_delete on storage.objects as restrictive
-for delete to authenticated using (public.hr_maintenance_can_write());
+for delete to authenticated using (bucket_id <> 'hr-documents' or public.hr_maintenance_can_write());
