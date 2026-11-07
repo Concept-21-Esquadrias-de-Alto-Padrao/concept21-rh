@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   getCurrentUserAccess,
+  hasMasterRole,
   isAuthUserEmailConfirmed,
   requestCurrentUserAccessReview,
   signOut,
@@ -18,6 +19,7 @@ import { toUserFriendlyErrorMessage } from "@/modules/hr/utils/errors";
 type AuthGateState =
   | { status: "loading" }
   | { status: "ready"; access: CurrentUserAccess }
+  | { status: "maintenance"; message: string }
   | { status: "pending-access"; access: CurrentUserAccess; requestId: string | null }
   | { status: "unverified-email"; email?: string | null }
   | { status: "inactive-profile"; email?: string | null }
@@ -32,6 +34,16 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let active = true;
     let loading = false;
+
+    async function pollMaintenance(access: CurrentUserAccess) {
+      const response = await fetch("/api/hr/system/maintenance", { cache: "no-store" });
+      if (!response.ok) throw new Error("Não foi possível verificar a manutenção do RH.");
+      const result = await response.json() as { maintenance: { enabled: boolean; message: string } };
+      if (!active) return;
+      setState(result.maintenance.enabled
+        ? { status: "maintenance", message: result.maintenance.message }
+        : { status: "ready", access });
+    }
 
     async function loadAuthState(silent = false) {
       if (loading) return;
@@ -121,7 +133,11 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        setState({ status: "ready", access });
+        if (hasMasterRole(access)) {
+          setState({ status: "ready", access });
+          return;
+        }
+        await pollMaintenance(access);
       } catch (error) {
         if (!active) {
           return;
@@ -180,6 +196,16 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       <p>O vínculo deste módulo foi revogado. Solicite revisão do acesso internamente.</p>
       <Link href="/login">Voltar ao login</Link>
     </div>;
+  }
+
+  if (state.status === "maintenance") {
+    return (
+      <div className="rounded-md border border-orange-200 bg-orange-50 p-5 text-sm text-orange-900" role="status">
+        <p className="font-semibold">O módulo RH está em manutenção.</p>
+        <p className="mt-2">{state.message}</p>
+        <p className="mt-2">Esta tela será liberada automaticamente quando a manutenção terminar. O login dos demais módulos continua disponível.</p>
+      </div>
+    );
   }
 
   if (state.status === "unverified-email") {
