@@ -105,9 +105,9 @@ $$;
 -- app schema. Expose only this restricted predicate in public.
 create function public.hr_maintenance_can_write()
 returns boolean language sql stable security definer
-set search_path = pg_catalog, public, app as $
+set search_path = pg_catalog, public, app as $hrbody$
   select app.hr_operational_write_allowed()
-$;
+$hrbody$;
 revoke all on function public.hr_maintenance_can_write() from public, anon;
 grant execute on function public.hr_maintenance_can_write() to authenticated;
 
