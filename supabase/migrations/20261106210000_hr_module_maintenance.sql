@@ -101,13 +101,23 @@ begin
 end;
 $$;
 
+-- Storage policies run as authenticated, which has no USAGE on the internal
+-- app schema. Expose only this restricted predicate in public.
+create function public.hr_maintenance_can_write()
+returns boolean language sql stable security definer
+set search_path = pg_catalog, public, app as $
+  select app.hr_operational_write_allowed()
+$;
+revoke all on function public.hr_maintenance_can_write() from public, anon;
+grant execute on function public.hr_maintenance_can_write() to authenticated;
+
 -- The document bucket uses browser-side Storage API writes. Restrictive
 -- policies intersect its existing permission policies without widening access.
 create policy hr_maintenance_storage_insert on storage.objects as restrictive
-for insert to authenticated with check (app.hr_operational_write_allowed());
+for insert to authenticated with check (public.hr_maintenance_can_write());
 create policy hr_maintenance_storage_update on storage.objects as restrictive
 for update to authenticated
-using (app.hr_operational_write_allowed())
-with check (app.hr_operational_write_allowed());
+using (public.hr_maintenance_can_write())
+with check (public.hr_maintenance_can_write());
 create policy hr_maintenance_storage_delete on storage.objects as restrictive
-for delete to authenticated using (app.hr_operational_write_allowed());
+for delete to authenticated using (public.hr_maintenance_can_write());
