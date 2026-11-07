@@ -111,13 +111,13 @@ $hrbody$;
 revoke all on function public.hr_maintenance_can_write() from public, anon;
 grant execute on function public.hr_maintenance_can_write() to authenticated;
 
--- The document bucket uses browser-side Storage API writes. Restrictive
--- policies intersect its existing permission policies without widening access.
+-- Only hr-documents is operational Storage. Restrictive policies intersect its
+-- existing permission policies without widening access to any bucket.
 create policy hr_maintenance_storage_insert on storage.objects as restrictive
-for insert to authenticated with check (public.hr_maintenance_can_write());
+for insert to authenticated with check (bucket_id <> 'hr-documents' or public.hr_maintenance_can_write());
 create policy hr_maintenance_storage_update on storage.objects as restrictive
 for update to authenticated
-using (public.hr_maintenance_can_write())
-with check (public.hr_maintenance_can_write());
+using (bucket_id <> 'hr-documents' or public.hr_maintenance_can_write())
+with check (bucket_id <> 'hr-documents' or public.hr_maintenance_can_write());
 create policy hr_maintenance_storage_delete on storage.objects as restrictive
-for delete to authenticated using (public.hr_maintenance_can_write());
+for delete to authenticated using (bucket_id <> 'hr-documents' or public.hr_maintenance_can_write());
