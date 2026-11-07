@@ -1,4 +1,5 @@
 import "server-only";
+import { headers } from "next/headers";
 
 export async function checkCorporateAccess(token: string): Promise<"allowed" | "revoked" | "unavailable"> {
   if (process.env.CORPORATE_GATE_ENABLED !== "true") return "allowed";
@@ -8,9 +9,12 @@ export async function checkCorporateAccess(token: string): Promise<"allowed" | "
     const url = new URL(endpoint);
     if (url.protocol !== "https:" || url.pathname !== "/api/internal/module-access" ||
         url.username || url.password || url.search || url.hash) return "unavailable";
+    const oidcToken = url.hostname.endsWith(".vercel.app")
+      ? (await headers()).get("x-vercel-oidc-token") : null;
     const response = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`,
+        ...(oidcToken ? { "x-vercel-trusted-oidc-idp-token": oidcToken } : {}) },
       body: JSON.stringify({ moduleKey: "rh" }),
       cache: "no-store",
       signal: AbortSignal.timeout(5000),
