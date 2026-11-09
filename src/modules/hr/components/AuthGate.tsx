@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   getCurrentUserAccess,
+  hasMasterRole,
   isAuthUserEmailConfirmed,
   requestCurrentUserAccessReview,
   signOut,
@@ -18,9 +19,11 @@ import { toUserFriendlyErrorMessage } from "@/modules/hr/utils/errors";
 type AuthGateState =
   | { status: "loading" }
   | { status: "ready"; access: CurrentUserAccess }
+  | { status: "maintenance"; message: string }
   | { status: "pending-access"; access: CurrentUserAccess; requestId: string | null }
   | { status: "unverified-email"; email?: string | null }
   | { status: "inactive-profile"; email?: string | null }
+  | { status: "revoked" }
   | { status: "missing-profile"; email?: string | null; authUserId?: string | null }
   | { status: "error"; message: string };
 
@@ -30,8 +33,21 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let active = true;
+    let loading = false;
 
-    async function loadAuthState() {
+    async function pollMaintenance(access: CurrentUserAccess) {
+      const response = await fetch("/api/hr/system/maintenance", { cache: "no-store" });
+      if (!response.ok) throw new Error("Não foi possível verificar a manutenção do RH.");
+      const result = await response.json() as { maintenance: { enabled: boolean; message: string } };
+      if (!active) return;
+      setState(result.maintenance.enabled
+        ? { status: "maintenance", message: result.maintenance.message }
+        : { status: "ready", access });
+    }
+
+    async function loadAuthState(silent = false) {
+      if (loading) return;
+      loading = true;
       try {
         const supabase = getSupabaseBrowserClient();
         const session = await supabase.auth.getSession();
@@ -39,6 +55,20 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
         if (!session.data.session) {
           router.replace("/login");
           return;
+        }
+
+        if (process.env.NEXT_PUBLIC_CORPORATE_GATE_ENABLED === "true") {
+          const gate = await fetch("/api/auth/corporate-access", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${session.data.session.access_token}` },
+            cache: "no-store",
+          });
+          if (gate.status === 403 || gate.status === 401) {
+            await signOut();
+            if (active) setState({ status: "revoked" });
+            return;
+          }
+          if (!gate.ok) throw new Error("Não foi possível validar o vínculo corporativo.");
         }
 
         if (!isAuthUserEmailConfirmed(session.data.session.user)) {
@@ -87,21 +117,27 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
         if (access.roles.length === 0) {
           let requestId: string | null = null;
 
-          try {
-            requestId = await requestCurrentUserAccessReview();
-          } catch (requestError) {
-            console.warn("Access review request failed", requestError);
+          if (!silent) {
+            try {
+              requestId = await requestCurrentUserAccessReview();
+            } catch (requestError) {
+              console.warn("Access review request failed", requestError);
+            }
           }
 
           if (!active) {
             return;
           }
 
-          setState({ status: "pending-access", access, requestId });
+          if (!silent) setState({ status: "pending-access", access, requestId });
           return;
         }
 
-        setState({ status: "ready", access });
+        if (hasMasterRole(access)) {
+          setState({ status: "ready", access });
+          return;
+        }
+        await pollMaintenance(access);
       } catch (error) {
         if (!active) {
           return;
@@ -111,13 +147,17 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
           status: "error",
           message: toUserFriendlyErrorMessage(error, "Não foi possível validar a sessão."),
         });
+      } finally {
+        loading = false;
       }
     }
 
-    loadAuthState();
+    void loadAuthState();
+    const interval = window.setInterval(() => { void loadAuthState(true); }, 5000);
 
     return () => {
       active = false;
+      window.clearInterval(interval);
     };
   }, [router]);
 
@@ -146,6 +186,24 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
     return (
       <div className="rounded-md border border-red-200 bg-red-50 p-5 text-sm text-red-700">
         {state.message}
+      </div>
+    );
+  }
+
+  if (state.status === "revoked") {
+    return <div className="rounded-md border border-red-200 bg-red-50 p-5 text-sm text-red-800">
+      <p className="font-semibold">Acesso corporativo encerrado.</p>
+      <p>O vínculo deste módulo foi revogado. Solicite revisão do acesso internamente.</p>
+      <Link href="/login">Voltar ao login</Link>
+    </div>;
+  }
+
+  if (state.status === "maintenance") {
+    return (
+      <div className="rounded-md border border-orange-200 bg-orange-50 p-5 text-sm text-orange-900" role="status">
+        <p className="font-semibold">O módulo RH está em manutenção.</p>
+        <p className="mt-2">{state.message}</p>
+        <p className="mt-2">Esta tela será liberada automaticamente quando a manutenção terminar. O login dos demais módulos continua disponível.</p>
       </div>
     );
   }
