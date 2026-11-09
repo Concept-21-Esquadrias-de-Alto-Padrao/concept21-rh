@@ -187,7 +187,7 @@ export function DocumentsPage() {
       <PageHeader
         eyebrow="Storage privado"
         title="Documentos"
-        description="Controle de documentos dos colaboradores com validade, status, aprovação e URL assinada."
+        description="Controle de documentos dos colaboradores com validade, status, aprovação e acesso seguro aos arquivos."
         actions={
           <button
             type="button"
