@@ -109,7 +109,7 @@ Os arquivos sao gravados em:
 employees/{employee_id}/documents/{document_id}-{filename}
 ```
 
-O acesso e feito por URL assinada via `generateDocumentSignedUrl`. A RLS do Storage extrai o `employee_id` do path e aplica os mesmos escopos de RBAC/RLS do colaborador.
+A abertura usa `downloadEmployeeDocument`, com download autenticado pelo JWT vigente, `cacheNonce` único e `cache: "no-store"`. O navegador abre os bytes recebidos em uma Blob URL local temporária. A RLS do Storage extrai o `employee_id` do path e aplica os mesmos escopos de RBAC/RLS do colaborador.
 
 ## Telas
 
