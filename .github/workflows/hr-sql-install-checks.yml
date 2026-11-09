@@ -1,0 +1,48 @@
+name: RH SQL installation checks
+
+on:
+  pull_request:
+    paths:
+      - "supabase/migrations/**"
+      - "supabase/seeds/**"
+      - "scripts/apply-supabase-migrations*"
+      - "tests/fixtures/**"
+      - ".github/workflows/hr-sql-install-checks.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  fresh-sql-install:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      LC_ALL: C.UTF-8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Start disposable native PostgreSQL
+        run: |
+          sudo systemctl start postgresql.service
+          sudo -u postgres createdb concept21_rh_sql_test
+          sudo -u postgres psql -X -v ON_ERROR_STOP=1 -d concept21_rh_sql_test -f tests/fixtures/supabase-sql-bootstrap.sql
+      - name: Apply every migration in filename order
+        shell: bash
+        run: |
+          for migration in supabase/migrations/*.sql; do
+            echo "Applying $migration"
+            sudo -u postgres psql -X -q -v ON_ERROR_STOP=1 -d concept21_rh_sql_test -f "$migration"
+          done
+      - name: Apply initial configuration seeds
+        shell: bash
+        run: |
+          for seed in supabase/seeds/*.sql; do
+            echo "Applying $seed"
+            sudo -u postgres psql -X -q -v ON_ERROR_STOP=1 -d concept21_rh_sql_test -f "$seed"
+          done
+      - name: Emit public schema inventory for reconciliation
+        run: sudo -u postgres psql -X -q -v ON_ERROR_STOP=1 -d concept21_rh_sql_test -f tests/fixtures/hr-schema-inventory.sql
+      - name: Check migration executor safeguards
+        run: node --test scripts/apply-supabase-migrations.test.mjs

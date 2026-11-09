@@ -47,3 +47,9 @@ O conjunto recuperável deve cobrir:
 Restaure em um destino isolado, com envio de e-mails e integrações externas desabilitados nesse destino. Não restaure sobre o banco oficial para realizar um ensaio. Confirme contagens e integridade dos dados, autenticação, permissões de Master e de usuário comum, leitura de um anexo com hash conferido, manutenção do módulo e continuidade do Portal. Registre as falhas e o tempo de recuperação. Se houver cobrança para criar o destino, defina o custo antes de provisionar.
 
 Para recuar uma publicação do controle de manutenção, mantenha as tabelas aditivas e sua auditoria enquanto retorna à versão anterior da aplicação. Remover o histórico ou as tabelas não é necessário para esse recuo. Confirme o estado da manutenção e a compatibilidade da versão anterior antes de reabrir o RH. Se o problema exigir restauração de dados, use o procedimento de recuperação já ensaiado.
+
+## Verificação da sequência SQL
+
+O workflow `RH SQL installation checks` aplica todos os arquivos de migração e os seeds, em ordem de nome, numa base descartável do PostgreSQL nativo do runner Ubuntu 24.04. Emite inventários e hashes dos objetos do módulo para apoiar a conciliação com uma base existente. O runner fornece PostgreSQL 16; a homologação Supabase usa PostgreSQL 17.
+
+O arquivo `tests/fixtures/supabase-sql-bootstrap.sql` define somente os contratos mínimos de Auth e Storage necessários à compilação do SQL do módulo. É uma fixture para testes e não deve ser aplicada em projetos Supabase. Essa verificação não substitui testes de login, JWTs reais, API de Storage ou configurações da plataforma Supabase. O workflow usa apenas os arquivos do repositório e não recebe credenciais de projetos.
