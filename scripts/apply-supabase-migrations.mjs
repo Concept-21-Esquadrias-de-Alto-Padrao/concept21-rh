@@ -5,6 +5,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 const DEFAULT_MIGRATIONS_PATH = "supabase/migrations";
 
@@ -203,55 +204,91 @@ create table if not exists app.codex_migration_history (
 );
 `;
 
-function main() {
-  const options = parseArgs(process.argv.slice(2));
-  const migrationsPath = path.resolve(process.cwd(), options.migrationsPath);
+export function runMigrations(argv, { query = queryRows, execute = runSupabaseDbQuery, log = console.log, cwd = process.cwd() } = {}) {
+  const options = parseArgs(argv);
+  const migrationsPath = path.resolve(cwd, options.migrationsPath);
+
+  if (options.baselineExisting) {
+    throw new Error(
+      "Automatic baseline is disabled: it can mark unapplied migrations as applied. " +
+      "Reconcile the existing database and checksums first; see supabase/README.md.",
+    );
+  }
 
   if (!existsSync(migrationsPath)) {
     throw new Error(`Migrations path not found: ${options.migrationsPath}`);
   }
 
-  if (!options.dryRun) {
-    runSupabaseDbQuery({ sql: historySql });
-  }
-
   const migrations = getMigrationFiles(migrationsPath);
 
   if (migrations.length === 0) {
-    console.log("No migration files found.");
+    log("No migration files found.");
     return;
   }
 
-  const historyExistsRows = queryRows("select to_regclass('app.codex_migration_history') is not null as exists;");
-  const historyExists = Boolean(historyExistsRows[0]?.exists);
-  const applied = new Set();
+  const historyExistsRows = query("select to_regclass('app.codex_migration_history') is not null as exists;");
+  if (typeof historyExistsRows[0]?.exists !== "boolean") {
+    throw new Error("Could not verify migration history; no changes were made.");
+  }
+  const historyExists = historyExistsRows[0].exists;
+  const history = historyExists
+    ? query("select version, file_name, checksum_sha256 from app.codex_migration_history order by version;")
+    : [];
 
-  if (historyExists) {
-    for (const row of queryRows("select version from app.codex_migration_history order by version;")) {
-      applied.add(row.version);
+  if (history.length === 0) {
+    const existingSchemaRows = query(`
+select exists (
+  select 1 from pg_class c
+  join pg_namespace n on n.oid = c.relnamespace
+  where n.nspname in ('public', 'app')
+    and c.relkind in ('r', 'p')
+    and not (n.nspname = 'app' and c.relname = 'codex_migration_history')
+) as exists;
+`);
+    if (typeof existingSchemaRows[0]?.exists !== "boolean") {
+      throw new Error("Could not verify whether the database is empty; no changes were made.");
+    }
+    if (existingSchemaRows[0].exists) {
+      throw new Error(
+        "Existing database has no reconciled app.codex_migration_history. " +
+        "Refusing to replay migrations or create a baseline. See supabase/README.md.",
+      );
     }
   }
 
+  const filesByVersion = new Map(migrations.map((migration) => [migration.version, migration]));
+  for (const row of history) {
+    const migration = filesByVersion.get(row.version);
+    if (!migration) {
+      throw new Error(`Recorded migration is missing from this checkout: ${row.version}. No changes were made.`);
+    }
+    if (row.file_name !== migration.name || row.checksum_sha256 !== sha256(migration.fullPath)) {
+      throw new Error(`Migration checksum or filename mismatch: ${migration.name}. No changes were made.`);
+    }
+  }
+
+  const applied = new Set(history.map((row) => row.version));
   const pending = migrations.filter((migration) => !applied.has(migration.version));
 
   if (pending.length === 0) {
-    console.log("No pending migrations.");
+    log("No pending migrations.");
     return;
+  }
+
+  if (!options.dryRun) {
+    execute({ sql: historySql });
   }
 
   for (const migration of pending) {
     const checksum = sha256(migration.fullPath);
-    const mode = options.baselineExisting ? "baseline" : "applied";
 
-    console.log(`Pending migration: ${migration.name} [${mode}]`);
+    log(`Pending migration: ${migration.name} [applied]`);
 
     if (options.dryRun) {
       continue;
     }
 
-    if (!options.baselineExisting) {
-      runSupabaseDbQuery({ file: migration.fullPath });
-    }
+    execute({ file: migration.fullPath });
 
     const recordSql = `
 insert into app.codex_migration_history (
@@ -264,26 +301,22 @@ insert into app.codex_migration_history (
   ${sqlLiteral(migration.version)},
   ${sqlLiteral(migration.name)},
   ${sqlLiteral(checksum)},
-  ${sqlLiteral(mode)},
+  'applied',
   'codex'
-)
-on conflict (version) do update
-set
-  file_name = excluded.file_name,
-  checksum_sha256 = excluded.checksum_sha256,
-  execution_mode = excluded.execution_mode,
-  applied_by = excluded.applied_by;
+);
 `;
 
-    runSupabaseDbQuery({ sql: recordSql });
+    execute({ sql: recordSql });
   }
 
-  console.log("Migration sync complete.");
+  log("Migration sync complete.");
 }
 
-try {
-  main();
-} catch (error) {
-  console.error(error instanceof Error ? error.message : error);
-  process.exitCode = 1;
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  try {
+    runMigrations(process.argv.slice(2));
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : error);
+    process.exitCode = 1;
+  }
 }
