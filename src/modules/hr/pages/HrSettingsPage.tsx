@@ -10,6 +10,7 @@ import { EmptyState } from "@/modules/hr/components/EmptyState";
 import { ErrorState } from "@/modules/hr/components/ErrorState";
 import { fieldClassName, FormField } from "@/modules/hr/components/FormField";
 import { LaborCostSettingsPanel } from "@/modules/hr/components/LaborCostSettingsPanel";
+import { HrMaintenanceControl } from "@/modules/hr/components/HrMaintenanceControl";
 import { LoadingState } from "@/modules/hr/components/LoadingState";
 import { PageHeader } from "@/modules/hr/components/PageHeader";
 import { PermissionMatrix } from "@/modules/hr/components/PermissionMatrix";
@@ -616,6 +617,11 @@ export function HrSettingsPage() {
                 </SectionCard>
               ),
             },
+            ...(data.isMaster ? [{
+              id: "system",
+              label: "Sistema",
+              content: <HrMaintenanceControl />,
+            }] : []),
           ]}
         />
       ) : null}
