@@ -56,3 +56,12 @@ export function isAllowedOAuthRedirect(candidate: string) {
     return false;
   }
 }
+
+// Limit federated sign-in to exact subjects already approved for this rollout.
+export function isAllowedOAuthSubject(subject: string): boolean {
+  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const subjects = process.env.CENTRAL_OAUTH_ALLOWED_SUBJECT_IDS
+    ?.split(",").map((value) => value.trim().toLowerCase()).filter(Boolean);
+  return Boolean(uuid.test(subject) && subjects?.length &&
+    subjects.every((value) => uuid.test(value)) && subjects.includes(subject.toLowerCase()));
+}

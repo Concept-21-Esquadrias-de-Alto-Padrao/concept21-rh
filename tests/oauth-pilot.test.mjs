@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { allowedOAuthClients, isAllowedOAuthClient, isAllowedOAuthRedirect } from '../src/lib/oauth-pilot.ts';
+import { allowedOAuthClients, isAllowedOAuthClient, isAllowedOAuthRedirect, isAllowedOAuthSubject } from '../src/lib/oauth-pilot.ts';
 
 const previous = {
   id: process.env.CENTRAL_OAUTH_ALLOWED_CLIENT_ID,
@@ -34,5 +34,26 @@ test('only exact registered clients and callback paths can be authorized', () =>
   ]) {
     if (value === undefined) delete process.env[key];
     else process.env[key] = value;
+  }
+});
+
+test('federation requires an approved UUID and fails closed for invalid configuration', () => {
+  const previousSubjects = process.env.CENTRAL_OAUTH_ALLOWED_SUBJECT_IDS;
+  const approved = '11111111-1111-4111-8111-111111111111';
+  const other = '22222222-2222-4222-8222-222222222222';
+  try {
+    delete process.env.CENTRAL_OAUTH_ALLOWED_SUBJECT_IDS;
+    assert.equal(isAllowedOAuthSubject(approved), false);
+    process.env.CENTRAL_OAUTH_ALLOWED_SUBJECT_IDS = approved;
+    assert.equal(isAllowedOAuthSubject(approved), true);
+    assert.equal(isAllowedOAuthSubject(other), false);
+    assert.equal(isAllowedOAuthSubject('user@example.com'), false);
+    process.env.CENTRAL_OAUTH_ALLOWED_SUBJECT_IDS = approved + ',not-a-uuid';
+    assert.equal(isAllowedOAuthSubject(approved), false);
+    process.env.CENTRAL_OAUTH_ALLOWED_SUBJECT_IDS = '  ';
+    assert.equal(isAllowedOAuthSubject(approved), false);
+  } finally {
+    if (previousSubjects === undefined) delete process.env.CENTRAL_OAUTH_ALLOWED_SUBJECT_IDS;
+    else process.env.CENTRAL_OAUTH_ALLOWED_SUBJECT_IDS = previousSubjects;
   }
 });

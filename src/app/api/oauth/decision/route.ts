@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
-import { allowedOAuthClients, isAllowedOAuthClient, isAllowedOAuthRedirect } from "@/lib/oauth-pilot";
+import { allowedOAuthClients, isAllowedOAuthClient, isAllowedOAuthRedirect, isAllowedOAuthSubject } from "@/lib/oauth-pilot";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { checkCorporateAccess } from "@/lib/corporate-access-server";
 
@@ -26,6 +26,9 @@ export async function POST(request: Request) {
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) {
     return NextResponse.json({ error: "Entre no RH novamente." }, { status: 401 });
+  }
+  if (decision === "approve" && !isAllowedOAuthSubject(user.id)) {
+    return NextResponse.json({ error: "Acesso central ainda não liberado." }, { status: 403 });
   }
   if (decision === "approve" && process.env.CORPORATE_GATE_ENABLED === "true") {
     const { data: { session } } = await supabase.auth.getSession();

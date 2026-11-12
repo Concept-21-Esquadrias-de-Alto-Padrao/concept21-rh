@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { getSupabaseAdminClient } from "@/lib/supabase/admin";
-import { allowedOAuthClients, isAllowedOAuthClient, isAllowedOAuthRedirect } from "@/lib/oauth-pilot";
+import { allowedOAuthClients, isAllowedOAuthClient, isAllowedOAuthRedirect, isAllowedOAuthSubject } from "@/lib/oauth-pilot";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -23,6 +23,10 @@ export default async function OAuthConsentPage({
   if (userError || !user) {
     const next = `/oauth/consent?authorization_id=${encodeURIComponent(authorizationId)}`;
     redirect(`/login?next=${encodeURIComponent(next)}`);
+  }
+
+  if (!isAllowedOAuthSubject(user.id)) {
+    return <p className="p-8">O acesso central ainda não foi liberado para este cadastro. Continue usando o acesso habitual ao módulo.</p>;
   }
 
   const { data: profile, error: profileError } = await getSupabaseAdminClient()
