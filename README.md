@@ -60,11 +60,18 @@ Comandos:
 
 ```bash
 npm run db:migrations:dry-run
-npm run db:migrations:baseline
 npm run db:migrations:push
 ```
 
 Os comandos usam `scripts/apply-supabase-migrations.mjs`, um runner Node multiplataforma que chama `npx supabase db query --linked`. O Supabase CLI precisa estar autenticado e o projeto precisa estar linkado na maquina.
+
+O executor interrompe bases existentes sem histórico próprio conciliado e verifica o nome e o SHA-256 de cada migração já registrada antes de executar qualquer alteração. O comando antigo `db:migrations:baseline` foi desativado: registrar todos os arquivos sem conferir o banco poderia esconder migrações ainda não aplicadas. Consulte [o procedimento de conciliação e recuperação](supabase/README.md) antes de iniciar uma base existente nesse executor.
+
+Verificação local das proteções do executor, sem conexão com banco:
+
+```bash
+node --test scripts/apply-supabase-migrations.test.mjs
+```
 
 Seeds rerunnable:
 
@@ -109,7 +116,7 @@ Os arquivos sao gravados em:
 employees/{employee_id}/documents/{document_id}-{filename}
 ```
 
-A abertura usa `downloadEmployeeDocument`, com download autenticado pelo JWT vigente, `cacheNonce` único e `cache: "no-store"`. O navegador abre os bytes recebidos em uma Blob URL local temporária. A RLS do Storage extrai o `employee_id` do path e aplica os mesmos escopos de RBAC/RLS do colaborador.
+O acesso e feito por URL assinada via `generateDocumentSignedUrl`. A RLS do Storage extrai o `employee_id` do path e aplica os mesmos escopos de RBAC/RLS do colaborador.
 
 ## Telas
 

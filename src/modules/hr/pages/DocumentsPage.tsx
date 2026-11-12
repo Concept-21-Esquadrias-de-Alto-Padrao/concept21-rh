@@ -281,7 +281,13 @@ export function DocumentsPage() {
             </FormField>
           </div>
 
-          <FileUploadField label="Arquivo (opcional)" file={file} onChange={setFile} />
+          <FileUploadField
+            label="Arquivo (opcional)"
+            file={file}
+            accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx"
+            hint="PDF, imagem, DOCX ou XLSX até 15 MB"
+            onChange={setFile}
+          />
 
           <FormField label="Observacoes">
             <textarea
