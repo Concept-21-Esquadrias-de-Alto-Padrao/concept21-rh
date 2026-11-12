@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { secureOrigin } from "@/lib/portal-session-policy";
 import {
   getCurrentUserAccess,
   signOut,
@@ -88,6 +89,10 @@ export function CurrentUserMenu() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (_event === "SIGNED_OUT") {
+        const portal = secureOrigin(process.env.NEXT_PUBLIC_PORTAL_ORIGIN);
+        window.location.replace(portal ? portal + "/login?logged_out=1" : "/login");
+      }
       if (!session) {
         setState({ status: "signed-out" });
         return;
@@ -118,6 +123,11 @@ export function CurrentUserMenu() {
   }, [state]);
 
   async function handleSignOut() {
+    const portal = secureOrigin(process.env.NEXT_PUBLIC_PORTAL_ORIGIN);
+    if (portal) {
+      window.location.replace(portal + "/auth/logout");
+      return;
+    }
     try {
       setSigningOut(true);
       await signOut();
